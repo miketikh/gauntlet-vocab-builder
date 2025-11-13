@@ -68,5 +68,6 @@ yarn-error.log*
 .vercel
 
 # BMAD and Claude
-.bmad-core
-.claude
+# .bmad-core
+# .claude
+.mcp.json
