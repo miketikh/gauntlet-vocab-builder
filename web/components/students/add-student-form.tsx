@@ -33,7 +33,7 @@ const formSchema = z.object({
     .string()
     .min(1, "Student name is required")
     .max(255, "Name is too long"),
-  grade_level: z.coerce
+  grade_level: z
     .number()
     .int()
     .min(6, "Grade must be 6-12")
@@ -100,7 +100,11 @@ export function AddStudentForm({ onSuccess, onCancel }: AddStudentFormProps) {
       })
 
       if (apiError) {
-        throw new Error(apiError.message || "Failed to create student")
+        const errorMessage =
+          typeof apiError === "object" && apiError !== null
+            ? JSON.stringify(apiError)
+            : String(apiError)
+        throw new Error(errorMessage || "Failed to create student")
       }
 
       if (!data) {
@@ -153,7 +157,7 @@ export function AddStudentForm({ onSuccess, onCancel }: AddStudentFormProps) {
             <FormItem>
               <FormLabel>Grade Level</FormLabel>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(parseInt(value))}
                 defaultValue={field.value?.toString()}
               >
                 <FormControl>
