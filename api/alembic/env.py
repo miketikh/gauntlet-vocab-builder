@@ -5,6 +5,7 @@ from pathlib import Path
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy import String, Text
 
 from alembic import context
 
@@ -17,6 +18,7 @@ load_dotenv()
 
 # Import SQLModel and models for autogenerate support
 from sqlmodel import SQLModel
+from sqlmodel.sql.sqltypes import AutoString
 from models.database import Educator, Student, Document, GradeWord
 
 # this is the Alembic Config object, which provides
@@ -44,6 +46,22 @@ target_metadata = SQLModel.metadata
 # ... etc.
 
 
+def render_item(type_, obj, autogen_context):
+    """Render SQLModel types as SQLAlchemy types in migrations."""
+    if type_ == "type" and isinstance(obj, AutoString):
+        # Check if AutoString has a length
+        if hasattr(obj, 'length') and obj.length:
+            # Render as sa.String(length)
+            autogen_context.imports.add("import sqlalchemy as sa")
+            return f"sa.String({obj.length})"
+        else:
+            # Render as sa.Text() for unbounded strings
+            autogen_context.imports.add("import sqlalchemy as sa")
+            return "sa.Text()"
+    # Return None to use default rendering for other types
+    return None
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -62,6 +80,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_item=render_item,
     )
 
     with context.begin_transaction():
@@ -83,7 +102,9 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            render_item=render_item,
         )
 
         with context.begin_transaction():
