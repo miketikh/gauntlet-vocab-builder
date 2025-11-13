@@ -9,9 +9,9 @@ from enum import Enum
 
 class WordCategory(str, Enum):
     """Category of word relative to student's grade level"""
-    BELOW = "below"  # Below grade level (easier)
-    AT = "at"        # At grade level
-    ABOVE = "above"  # Above grade level (challenging)
+    BELOW = "below"  # 2+ grades below student (easier vocabulary)
+    AT = "at"        # Within 1 grade of student level (appropriate difficulty)
+    ABOVE = "above"  # 2+ grades above student (challenging vocabulary)
     UNKNOWN = "unknown"  # Not in our database
 
 

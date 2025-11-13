@@ -94,6 +94,12 @@ def categorize_word(
     """
     Categorize a word relative to student's grade level
 
+    Categorization rules (per PRD):
+    - BELOW: 2+ grades below student level
+    - AT: Within 1 grade of student level (student_grade - 1 to student_grade + 1)
+    - ABOVE: 1+ grades above student level
+    - UNKNOWN: Not in database
+
     Args:
         word_grade: Grade level of the word (or None if unknown)
         student_grade: Student's current grade level
@@ -104,11 +110,17 @@ def categorize_word(
     if word_grade is None:
         return WordCategory.UNKNOWN
 
-    if word_grade < student_grade:
+    # Calculate grade difference (positive = above student, negative = below student)
+    grade_diff = word_grade - student_grade
+
+    if grade_diff <= -2:
+        # 2 or more grades below student
         return WordCategory.BELOW
-    elif word_grade == student_grade:
+    elif -1 <= grade_diff <= 1:
+        # Within 1 grade (includes student_grade - 1, student_grade, student_grade + 1)
         return WordCategory.AT
-    else:  # word_grade > student_grade
+    else:  # grade_diff >= 2
+        # 2 or more grades above student
         return WordCategory.ABOVE
 
 

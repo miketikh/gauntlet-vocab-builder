@@ -279,6 +279,105 @@ print(f"Average grade level: {profile.statistics.average_grade_level}")
 print(f"Challenging words: {len(profile.challenging_words)}")
 ```
 
+##### Grade-Level Mapping Algorithm
+
+The vocabulary analysis engine uses a sophisticated algorithm to map words to grade levels and categorize them relative to each student:
+
+**1. Word Extraction and Normalization**
+- Text is processed through spaCy NLP pipeline
+- Words are tokenized and lemmatized (e.g., "running" → "run")
+- Stop words, punctuation, and short words (<3 chars) are filtered
+- Word frequencies are calculated
+
+**2. Grade-Level Lookup**
+- All unique words are queried from `grade_words` table in a single batch query
+- For words appearing at multiple grade levels, the **lowest grade** is used (most accessible interpretation)
+- For words in multiple subjects, **ELA** is preferred when available
+- Unknown words (not in database) are tracked separately
+
+**3. Word Categorization Relative to Student Grade**
+
+Each word is categorized based on its grade level compared to the student's grade level:
+
+| Category | Rule | Example (Grade 8 student) |
+|----------|------|---------------------------|
+| **BELOW** | Word is 2+ grades below student | Grade 6 or lower words |
+| **AT_LEVEL** | Word is within 1 grade of student | Grade 7, 8, or 9 words |
+| **ABOVE** | Word is 2+ grades above student | Grade 10+ words |
+| **UNKNOWN** | Word not found in database | Specialized vocabulary, proper nouns |
+
+**Categorization Logic:**
+```python
+grade_diff = word_grade - student_grade
+
+if grade_diff <= -2:    # 2+ below
+    category = BELOW
+elif -1 <= grade_diff <= 1:  # Within 1 grade
+    category = AT_LEVEL
+else:  # grade_diff >= 2  # 2+ above
+    category = ABOVE
+```
+
+**4. Statistical Calculations**
+
+- **Average Grade Level**: Mean of all analyzed words' grade levels (excludes unknown words)
+- **Grade Distribution**: Percentage of words at each grade level (6-12)
+- **Category Counts**: Number of words in each category (below/at/above/unknown)
+- **Unknown Percentage**: Ratio of unknown words to total unique words
+
+**5. Challenging Words Identification**
+
+Words categorized as ABOVE (2+ grades above student) are:
+- Sorted by grade level (highest first)
+- Then sorted by frequency (most common first)
+- Limited to top 20 for display
+- Include definitions and examples when available
+
+**6. Performance Optimizations**
+
+- **Batch Queries**: All words looked up in single SQL query using `WHERE word IN (...)`
+- **spaCy Model Caching**: NLP model loaded once and reused across requests
+- **Efficient Data Structures**: Uses Counter and dict for O(1) lookups
+- **Target Performance**: 5,000-word document analyzed in <10 seconds
+
+**7. Example Analysis Output**
+
+For a Grade 8 student analyzing a history passage:
+
+```python
+{
+    "student_grade_level": 8,
+    "statistics": {
+        "total_words": 523,
+        "unique_words": 245,
+        "analyzed_words": 220,
+        "unknown_words": 25,
+        "unknown_percentage": 0.102,
+        "average_grade_level": 8.2,
+        "below_grade_count": 80,   # Grade 6 and below
+        "at_grade_count": 120,      # Grade 7, 8, 9
+        "above_grade_count": 20     # Grade 10+
+    },
+    "grade_distribution": {
+        "grade_6": 0.15,
+        "grade_7": 0.20,
+        "grade_8": 0.30,
+        "grade_9": 0.18,
+        "grade_10": 0.10,
+        "grade_11": 0.05,
+        "grade_12": 0.02
+    },
+    "challenging_words": [
+        {
+            "word": "sovereignty",
+            "grade_level": 11,
+            "frequency": 3,
+            "definition": "supreme power or authority"
+        }
+    ]
+}
+```
+
 ### Analysis Models
 
 Pydantic models in `models/analysis.py`:
