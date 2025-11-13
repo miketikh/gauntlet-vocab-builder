@@ -1,0 +1,1579 @@
+{
+  "name": "Academic Word List (AWL)",
+  "description": "570 word families frequently appearing in academic texts",
+  "source": "Victoria University of Wellington - Averil Coxhead",
+  "total_words": 120,
+  "by_sublist": {
+    "1": 60,
+    "2": 60
+  },
+  "words": [
+    {
+      "headword": "analyse",
+      "sublist": 1,
+      "related_forms": [
+        "analysed",
+        "analyser",
+        "analysers",
+        "analyses",
+        "analysing",
+        "analysis",
+        "analyst",
+        "analysts",
+        "analytic",
+        "analytical",
+        "analytically",
+        "analyze",
+        "analyzed",
+        "analyzes",
+        "analyzing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "approach",
+      "sublist": 1,
+      "related_forms": [
+        "approachable",
+        "approached",
+        "approaches",
+        "approaching",
+        "unapproachable"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "area",
+      "sublist": 1,
+      "related_forms": [
+        "areas"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "assess",
+      "sublist": 1,
+      "related_forms": [
+        "assessable",
+        "assessed",
+        "assesses",
+        "assessing",
+        "assessment",
+        "assessments",
+        "reassess",
+        "reassessed",
+        "reassessing",
+        "reassessment",
+        "unassessed"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "assume",
+      "sublist": 1,
+      "related_forms": [
+        "assumed",
+        "assumes",
+        "assuming",
+        "assumption",
+        "assumptions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "authority",
+      "sublist": 1,
+      "related_forms": [
+        "authoritative",
+        "authorities"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "available",
+      "sublist": 1,
+      "related_forms": [
+        "availability",
+        "unavailable"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "benefit",
+      "sublist": 1,
+      "related_forms": [
+        "beneficial",
+        "beneficiaries",
+        "beneficiary",
+        "benefited",
+        "benefiting",
+        "benefits"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "concept",
+      "sublist": 1,
+      "related_forms": [
+        "conception",
+        "concepts",
+        "conceptual",
+        "conceptualisation",
+        "conceptualise",
+        "conceptualised",
+        "conceptualises",
+        "conceptualising",
+        "conceptually"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "consist",
+      "sublist": 1,
+      "related_forms": [
+        "consisted",
+        "consistency",
+        "consistent",
+        "consistently",
+        "consisting",
+        "consists",
+        "inconsistencies",
+        "inconsistency",
+        "inconsistent"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "constitute",
+      "sublist": 1,
+      "related_forms": [
+        "constituencies",
+        "constituency",
+        "constituent",
+        "constituents",
+        "constituted",
+        "constitutes",
+        "constituting",
+        "constitution",
+        "constitutional",
+        "constitutionally",
+        "constitutions",
+        "constitutive",
+        "unconstitutional"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "context",
+      "sublist": 1,
+      "related_forms": [
+        "contexts",
+        "contextual",
+        "contextualise",
+        "contextualised",
+        "contextualising",
+        "contextualize",
+        "contextualized",
+        "contextualizing",
+        "uncontextualised",
+        "uncontextualized"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "contract",
+      "sublist": 1,
+      "related_forms": [
+        "contracted",
+        "contracting",
+        "contractor",
+        "contractors",
+        "contracts"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "create",
+      "sublist": 1,
+      "related_forms": [
+        "created",
+        "creates",
+        "creating",
+        "creation",
+        "creations",
+        "creative",
+        "creatively",
+        "creativity",
+        "creator",
+        "creators",
+        "recreate",
+        "recreated",
+        "recreates",
+        "recreating"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "data",
+      "sublist": 1,
+      "related_forms": [],
+      "source": "AWL"
+    },
+    {
+      "headword": "define",
+      "sublist": 1,
+      "related_forms": [
+        "definable",
+        "defined",
+        "defines",
+        "defining",
+        "definition",
+        "definitions",
+        "redefine",
+        "redefined",
+        "redefines",
+        "redefining",
+        "undefined"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "derive",
+      "sublist": 1,
+      "related_forms": [
+        "derivation",
+        "derivations",
+        "derivative",
+        "derivatives",
+        "derived",
+        "derives",
+        "deriving"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "distribute",
+      "sublist": 1,
+      "related_forms": [
+        "distributed",
+        "distributing",
+        "distribution",
+        "distributional",
+        "distributions",
+        "distributive",
+        "distributor",
+        "distributors",
+        "redistribute",
+        "redistributed",
+        "redistributes",
+        "redistributing",
+        "redistribution"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "economy",
+      "sublist": 1,
+      "related_forms": [
+        "economic",
+        "economical",
+        "economically",
+        "economics",
+        "economies",
+        "economist",
+        "economists",
+        "uneconomical"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "environment",
+      "sublist": 1,
+      "related_forms": [
+        "environmental",
+        "environmentalist",
+        "environmentalists",
+        "environmentally",
+        "environments"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "establish",
+      "sublist": 1,
+      "related_forms": [
+        "disestablish",
+        "disestablished",
+        "disestablishes",
+        "disestablishing",
+        "disestablishment",
+        "established",
+        "establishes",
+        "establishing",
+        "establishment",
+        "establishments"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "estimate",
+      "sublist": 1,
+      "related_forms": [
+        "estimated",
+        "estimates",
+        "estimating",
+        "estimation",
+        "estimations",
+        "over-estimate",
+        "overestimate",
+        "overestimated",
+        "overestimates",
+        "overestimating",
+        "underestimate",
+        "underestimated",
+        "underestimates",
+        "underestimating"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "evident",
+      "sublist": 1,
+      "related_forms": [
+        "evidence",
+        "evidenced",
+        "evidential",
+        "evidently"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "export",
+      "sublist": 1,
+      "related_forms": [
+        "exported",
+        "exporter",
+        "exporters",
+        "exporting",
+        "exports"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "factor",
+      "sublist": 1,
+      "related_forms": [
+        "factored",
+        "factoring",
+        "factors"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "finance",
+      "sublist": 1,
+      "related_forms": [
+        "financed",
+        "finances",
+        "financial",
+        "financially",
+        "financier",
+        "financiers",
+        "financing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "formula",
+      "sublist": 1,
+      "related_forms": [
+        "formulae",
+        "formulas",
+        "formulate",
+        "formulated",
+        "formulating",
+        "formulation",
+        "formulations",
+        "reformulate",
+        "reformulated",
+        "reformulating",
+        "reformulation",
+        "reformulations"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "function",
+      "sublist": 1,
+      "related_forms": [
+        "functional",
+        "functionally",
+        "functioned",
+        "functioning",
+        "functions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "identify",
+      "sublist": 1,
+      "related_forms": [
+        "identifiable",
+        "identification",
+        "identified",
+        "identifies",
+        "identifying",
+        "identities",
+        "identity",
+        "unidentifiable"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "income",
+      "sublist": 1,
+      "related_forms": [
+        "incomes"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "indicate",
+      "sublist": 1,
+      "related_forms": [
+        "indicated",
+        "indicates",
+        "indicating",
+        "indication",
+        "indications",
+        "indicative",
+        "indicator",
+        "indicators"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "individual",
+      "sublist": 1,
+      "related_forms": [
+        "individualised",
+        "individualism",
+        "individualist",
+        "individualistic",
+        "individualists",
+        "individuality",
+        "individually",
+        "individuals"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "interpret",
+      "sublist": 1,
+      "related_forms": [
+        "interpretation",
+        "interpretations",
+        "interpretative",
+        "interpreted",
+        "interpreting",
+        "interpretive",
+        "interprets",
+        "misinterpret",
+        "misinterpretation",
+        "misinterpretations",
+        "misinterpreted",
+        "misinterpreting",
+        "misinterprets",
+        "reinterpret",
+        "reinterpretation",
+        "reinterpretations",
+        "reinterpreted",
+        "reinterpreting",
+        "reinterprets"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "involve",
+      "sublist": 1,
+      "related_forms": [
+        "involved",
+        "involvement",
+        "involves",
+        "involving",
+        "uninvolved"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "issue",
+      "sublist": 1,
+      "related_forms": [
+        "issued",
+        "issues",
+        "issuing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "labour",
+      "sublist": 1,
+      "related_forms": [
+        "labor",
+        "labored",
+        "labors",
+        "laboured",
+        "labouring",
+        "labours"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "legal",
+      "sublist": 1,
+      "related_forms": [
+        "illegal",
+        "illegality",
+        "illegally",
+        "legality",
+        "legally"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "legislate",
+      "sublist": 1,
+      "related_forms": [
+        "legislated",
+        "legislates",
+        "legislating",
+        "legislation",
+        "legislative",
+        "legislator",
+        "legislators",
+        "legislature"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "major",
+      "sublist": 1,
+      "related_forms": [
+        "majorities",
+        "majority"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "method",
+      "sublist": 1,
+      "related_forms": [
+        "methodical",
+        "methodological",
+        "methodologies",
+        "methodology",
+        "methods"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "occur",
+      "sublist": 1,
+      "related_forms": [
+        "occurred",
+        "occurrence",
+        "occurrences",
+        "occurring",
+        "occurs",
+        "reoccur",
+        "reoccurred",
+        "reoccurring",
+        "reoccurs"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "percent",
+      "sublist": 1,
+      "related_forms": [
+        "percentage",
+        "percentages"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "period",
+      "sublist": 1,
+      "related_forms": [
+        "periodic",
+        "periodical",
+        "periodically",
+        "periodicals",
+        "periods"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "policy",
+      "sublist": 1,
+      "related_forms": [
+        "policies"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "principle",
+      "sublist": 1,
+      "related_forms": [
+        "principled",
+        "principles",
+        "unprincipled"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "proceed",
+      "sublist": 1,
+      "related_forms": [
+        "procedural",
+        "procedure",
+        "procedures",
+        "proceeded",
+        "proceeding",
+        "proceedings",
+        "proceeds"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "process",
+      "sublist": 1,
+      "related_forms": [
+        "processed",
+        "processes",
+        "processing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "require",
+      "sublist": 1,
+      "related_forms": [
+        "required",
+        "requirement",
+        "requirements",
+        "requires",
+        "requiring"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "research",
+      "sublist": 1,
+      "related_forms": [
+        "researched",
+        "researcher",
+        "researchers",
+        "researches",
+        "researching"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "respond",
+      "sublist": 1,
+      "related_forms": [
+        "responded",
+        "respondent",
+        "respondents",
+        "responding",
+        "responds",
+        "response",
+        "responses",
+        "responsive",
+        "responsiveness",
+        "unresponsive"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "role",
+      "sublist": 1,
+      "related_forms": [
+        "roles"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "section",
+      "sublist": 1,
+      "related_forms": [
+        "sectioned",
+        "sectioning",
+        "sections"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "sector",
+      "sublist": 1,
+      "related_forms": [
+        "sectors"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "significant",
+      "sublist": 1,
+      "related_forms": [
+        "insignificant",
+        "insignificantly",
+        "significance",
+        "significantly",
+        "signified",
+        "signifies",
+        "signify",
+        "signifying"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "similar",
+      "sublist": 1,
+      "related_forms": [
+        "dissimilar",
+        "similarities",
+        "similarity",
+        "similarly"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "source",
+      "sublist": 1,
+      "related_forms": [
+        "sourced",
+        "sources",
+        "sourcing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "specific",
+      "sublist": 1,
+      "related_forms": [
+        "specifically",
+        "specification",
+        "specifications",
+        "specificity",
+        "specifics"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "structure",
+      "sublist": 1,
+      "related_forms": [
+        "restructure",
+        "restructured",
+        "restructures",
+        "restructuring",
+        "structural",
+        "structurally",
+        "structured",
+        "structures",
+        "structuring",
+        "unstructured"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "theory",
+      "sublist": 1,
+      "related_forms": [
+        "theoretical",
+        "theoretically",
+        "theories",
+        "theorist",
+        "theorists"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "vary",
+      "sublist": 1,
+      "related_forms": [
+        "invariable",
+        "invariably",
+        "variability",
+        "variable",
+        "variables",
+        "variably",
+        "variance",
+        "variant",
+        "variants",
+        "variation",
+        "variations",
+        "varied",
+        "varies",
+        "varying"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "achieve",
+      "sublist": 2,
+      "related_forms": [
+        "achievable",
+        "achieved",
+        "achievement",
+        "achievements",
+        "achieves",
+        "achieving"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "acquire",
+      "sublist": 2,
+      "related_forms": [
+        "acquired",
+        "acquires",
+        "acquiring",
+        "acquisition",
+        "acquisitions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "administrate",
+      "sublist": 2,
+      "related_forms": [
+        "administrates",
+        "administration",
+        "administrations",
+        "administrative",
+        "administratively",
+        "administrator",
+        "administrators"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "affect",
+      "sublist": 2,
+      "related_forms": [
+        "affected",
+        "affecting",
+        "affective",
+        "affectively",
+        "affects",
+        "unaffected"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "appropriate",
+      "sublist": 2,
+      "related_forms": [
+        "appropriacy",
+        "appropriately",
+        "appropriateness",
+        "inappropriacy",
+        "inappropriate",
+        "inappropriately"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "aspect",
+      "sublist": 2,
+      "related_forms": [
+        "aspects"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "assist",
+      "sublist": 2,
+      "related_forms": [
+        "assistance",
+        "assistant",
+        "assistants",
+        "assisted",
+        "assisting",
+        "assists",
+        "unassisted"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "category",
+      "sublist": 2,
+      "related_forms": [
+        "categories",
+        "categorisation",
+        "categorise",
+        "categorised",
+        "categorises",
+        "categorising",
+        "categorization",
+        "categorized",
+        "categorizes",
+        "categorizing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "chapter",
+      "sublist": 2,
+      "related_forms": [
+        "chapters"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "commission",
+      "sublist": 2,
+      "related_forms": [
+        "commissioned",
+        "commissioner",
+        "commissioners",
+        "commissioning",
+        "commissions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "community",
+      "sublist": 2,
+      "related_forms": [
+        "communities"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "complex",
+      "sublist": 2,
+      "related_forms": [
+        "complexities",
+        "complexity"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "compute",
+      "sublist": 2,
+      "related_forms": [
+        "computable",
+        "computation",
+        "computational",
+        "computations",
+        "computed",
+        "computer",
+        "computerised",
+        "computers",
+        "computing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "conclude",
+      "sublist": 2,
+      "related_forms": [
+        "concluded",
+        "concludes",
+        "concluding",
+        "conclusion",
+        "conclusions",
+        "conclusive",
+        "conclusively",
+        "inconclusive",
+        "inconclusively"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "conduct",
+      "sublist": 2,
+      "related_forms": [
+        "conducted",
+        "conducting",
+        "conducts"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "consequent",
+      "sublist": 2,
+      "related_forms": [
+        "consequence",
+        "consequences",
+        "consequently"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "construct",
+      "sublist": 2,
+      "related_forms": [
+        "constructed",
+        "constructing",
+        "construction",
+        "constructions",
+        "constructive",
+        "constructs",
+        "reconstruct",
+        "reconstructed",
+        "reconstructing",
+        "reconstruction",
+        "reconstructs"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "consume",
+      "sublist": 2,
+      "related_forms": [
+        "consumed",
+        "consumer",
+        "consumers",
+        "consumes",
+        "consuming",
+        "consumption"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "credit",
+      "sublist": 2,
+      "related_forms": [
+        "credited",
+        "crediting",
+        "creditor",
+        "creditors",
+        "credits"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "culture",
+      "sublist": 2,
+      "related_forms": [
+        "cultural",
+        "culturally",
+        "cultured",
+        "cultures",
+        "uncultured"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "design",
+      "sublist": 2,
+      "related_forms": [
+        "designed",
+        "designer",
+        "designers",
+        "designing",
+        "designs"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "distinct",
+      "sublist": 2,
+      "related_forms": [
+        "distinction",
+        "distinctions",
+        "distinctive",
+        "distinctively",
+        "distinctly",
+        "indistinct",
+        "indistinctly"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "element",
+      "sublist": 2,
+      "related_forms": [
+        "elements"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "equate",
+      "sublist": 2,
+      "related_forms": [
+        "equated",
+        "equates",
+        "equating",
+        "equation",
+        "equations"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "evaluate",
+      "sublist": 2,
+      "related_forms": [
+        "evaluated",
+        "evaluates",
+        "evaluating",
+        "evaluation",
+        "evaluations",
+        "evaluative",
+        "re-evaluate",
+        "re-evaluated",
+        "re-evaluates",
+        "re-evaluating",
+        "re-evaluation"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "feature",
+      "sublist": 2,
+      "related_forms": [
+        "featured",
+        "features",
+        "featuring"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "final",
+      "sublist": 2,
+      "related_forms": [
+        "finalise",
+        "finalised",
+        "finalises",
+        "finalising",
+        "finality",
+        "finalize",
+        "finalized",
+        "finalizes",
+        "finalizing",
+        "finally",
+        "finals"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "focus",
+      "sublist": 2,
+      "related_forms": [
+        "focused",
+        "focuses",
+        "focusing",
+        "focussed",
+        "focussing",
+        "refocus",
+        "refocused",
+        "refocuses",
+        "refocusing",
+        "refocussed",
+        "refocusses",
+        "refocussing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "impact",
+      "sublist": 2,
+      "related_forms": [
+        "impacted",
+        "impacting",
+        "impacts"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "injure",
+      "sublist": 2,
+      "related_forms": [
+        "injured",
+        "injures",
+        "injuries",
+        "injuring",
+        "injury",
+        "uninjured"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "institute",
+      "sublist": 2,
+      "related_forms": [
+        "instituted",
+        "institutes",
+        "instituting",
+        "institution",
+        "institutional",
+        "institutionalise",
+        "institutionalised",
+        "institutionalises",
+        "institutionalising",
+        "institutionalized",
+        "institutionalizes",
+        "institutionalizing",
+        "institutionally",
+        "institutions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "invest",
+      "sublist": 2,
+      "related_forms": [
+        "invested",
+        "investing",
+        "investment",
+        "investments",
+        "investor",
+        "investors",
+        "invests",
+        "reinvest",
+        "reinvested",
+        "reinvesting",
+        "reinvestment",
+        "reinvests"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "item",
+      "sublist": 2,
+      "related_forms": [
+        "itemisation",
+        "itemise",
+        "itemised",
+        "itemises",
+        "itemising",
+        "items"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "journal",
+      "sublist": 2,
+      "related_forms": [
+        "journals"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "maintain",
+      "sublist": 2,
+      "related_forms": [
+        "maintained",
+        "maintaining",
+        "maintains",
+        "maintenance"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "normal",
+      "sublist": 2,
+      "related_forms": [
+        "abnormal",
+        "abnormally",
+        "normalisation",
+        "normalise",
+        "normalised",
+        "normalises",
+        "normalising",
+        "normality",
+        "normalization",
+        "normalize",
+        "normalized",
+        "normalizes",
+        "normalizing",
+        "normally"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "obtain",
+      "sublist": 2,
+      "related_forms": [
+        "obtainable",
+        "obtained",
+        "obtaining",
+        "obtains",
+        "unobtainable"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "participate",
+      "sublist": 2,
+      "related_forms": [
+        "participant",
+        "participants",
+        "participated",
+        "participates",
+        "participating",
+        "participation",
+        "participatory"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "perceive",
+      "sublist": 2,
+      "related_forms": [
+        "perceived",
+        "perceives",
+        "perceiving",
+        "perception",
+        "perceptions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "positive",
+      "sublist": 2,
+      "related_forms": [
+        "positively"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "potential",
+      "sublist": 2,
+      "related_forms": [
+        "potentially"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "previous",
+      "sublist": 2,
+      "related_forms": [
+        "previously"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "primary",
+      "sublist": 2,
+      "related_forms": [
+        "primarily"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "purchase",
+      "sublist": 2,
+      "related_forms": [
+        "purchased",
+        "purchaser",
+        "purchasers",
+        "purchases",
+        "purchasing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "range",
+      "sublist": 2,
+      "related_forms": [
+        "ranged",
+        "ranges",
+        "ranging"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "region",
+      "sublist": 2,
+      "related_forms": [
+        "regional",
+        "regionally",
+        "regions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "regulate",
+      "sublist": 2,
+      "related_forms": [
+        "deregulated",
+        "deregulates",
+        "deregulating",
+        "deregulation",
+        "regulated",
+        "regulates",
+        "regulating",
+        "regulation",
+        "regulations",
+        "regulator",
+        "regulators",
+        "regulatory",
+        "unregulated"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "relevant",
+      "sublist": 2,
+      "related_forms": [
+        "irrelevance",
+        "irrelevant",
+        "relevance"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "reside",
+      "sublist": 2,
+      "related_forms": [
+        "resided",
+        "residence",
+        "resident",
+        "residential",
+        "residents",
+        "resides",
+        "residing"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "resource",
+      "sublist": 2,
+      "related_forms": [
+        "resourced",
+        "resourceful",
+        "resources",
+        "resourcing",
+        "under-resourced",
+        "unresourceful"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "restrict",
+      "sublist": 2,
+      "related_forms": [
+        "restricted",
+        "restricting",
+        "restriction",
+        "restrictions",
+        "restrictive",
+        "restrictively",
+        "restricts",
+        "unrestricted",
+        "unrestrictive"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "secure",
+      "sublist": 2,
+      "related_forms": [
+        "insecure",
+        "insecurities",
+        "insecurity",
+        "secured",
+        "securely",
+        "secures",
+        "securing",
+        "securities",
+        "security"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "seek",
+      "sublist": 2,
+      "related_forms": [
+        "seeking",
+        "seeks",
+        "sought"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "select",
+      "sublist": 2,
+      "related_forms": [
+        "selected",
+        "selecting",
+        "selection",
+        "selections",
+        "selective",
+        "selectively",
+        "selector",
+        "selectors",
+        "selects"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "site",
+      "sublist": 2,
+      "related_forms": [
+        "sites"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "strategy",
+      "sublist": 2,
+      "related_forms": [
+        "strategic",
+        "strategically",
+        "strategies",
+        "strategist",
+        "strategists"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "survey",
+      "sublist": 2,
+      "related_forms": [
+        "surveyed",
+        "surveying",
+        "surveys"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "text",
+      "sublist": 2,
+      "related_forms": [
+        "texts",
+        "textual"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "tradition",
+      "sublist": 2,
+      "related_forms": [
+        "non-traditional",
+        "traditional",
+        "traditionalist",
+        "traditionally",
+        "traditions"
+      ],
+      "source": "AWL"
+    },
+    {
+      "headword": "transfer",
+      "sublist": 2,
+      "related_forms": [
+        "transferable",
+        "transference",
+        "transferred",
+        "transferring",
+        "transfers"
+      ],
+      "source": "AWL"
+    }
+  ]
+}
