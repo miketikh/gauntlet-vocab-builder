@@ -169,6 +169,51 @@ The frontend generates TypeScript types from the OpenAPI schema:
 
 See `web/lib/api-client.ts` for usage examples.
 
+## Data Import Scripts
+
+### Import Grade-Level Vocabulary Data
+
+Import pre-compiled vocabulary word lists for grades 6-12 into the `grade_words` table:
+
+```bash
+# Activate virtual environment first
+source venv/bin/activate
+
+# Import all grades (6-12)
+python scripts/import_vocab_data.py
+
+# Import specific grade only
+python scripts/import_vocab_data.py --grade 8
+
+# Preview import without inserting data (dry-run)
+python scripts/import_vocab_data.py --dry-run
+
+# Clear table before import
+python scripts/import_vocab_data.py --clear
+```
+
+**Data Source:** `/language-docs/final/grade-{6-12}.json`
+
+**Features:**
+- Validates and transforms JSON data to match GradeWord model
+- Handles duplicates (skips existing word+grade+subject combinations)
+- Normalizes words to lowercase
+- Maps subjects (defaults to "ELA")
+- Progress reporting during import
+- Database verification after import
+
+**Import Statistics:**
+- Grade 6: 182 words
+- Grade 7: 222 words
+- Grade 8: 213 words
+- Grade 9: 203 words
+- Grade 10: 208 words
+- Grade 11: 208 words
+- Grade 12: 209 words
+- **Total: 1,445 words**
+
+The script can be re-run without duplicating data. Use `--clear` to reset the table if needed.
+
 ## Development
 
 ### Running tests
