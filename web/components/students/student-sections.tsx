@@ -5,7 +5,11 @@ import { FileText, BarChart3, Lightbulb, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog"
 import { DocumentList } from "@/components/documents/document-list"
+import { BulkAnalyzeButton } from "@/components/documents/bulk-analyze-button"
 import { getAuthenticatedClient } from "@/lib/api-client"
+import type { components } from "@/types/api"
+
+type DocumentPublic = components["schemas"]["DocumentPublic"]
 
 interface StudentSectionsProps {
   studentId: number
@@ -21,9 +25,10 @@ export function StudentSections({
   refreshTrigger = 0,
 }: StudentSectionsProps) {
   const [documentCount, setDocumentCount] = useState<number>(0)
+  const [documents, setDocuments] = useState<DocumentPublic[]>([])
   const [isLoadingCount, setIsLoadingCount] = useState(true)
 
-  // Fetch document count for display in header
+  // Fetch document count and list for display in header
   useEffect(() => {
     async function fetchDocumentCount() {
       try {
@@ -41,6 +46,7 @@ export function StudentSections({
         )
         if (data) {
           setDocumentCount(data.length)
+          setDocuments(data)
         }
       } catch (error) {
         console.error("Error fetching document count:", error)
@@ -51,6 +57,12 @@ export function StudentSections({
 
     fetchDocumentCount()
   }, [studentId, token, refreshTrigger])
+
+  // Handle bulk analysis complete
+  const handleBulkAnalyzeComplete = () => {
+    // Refresh document list
+    onDocumentUploaded?.()
+  }
 
   return (
     <div className="space-y-6">
@@ -67,11 +79,20 @@ export function StudentSections({
                 </span>
               )}
             </CardTitle>
-            <UploadDocumentDialog
-              studentId={studentId}
-              token={token}
-              onUploadComplete={onDocumentUploaded}
-            />
+            <div className="flex items-center gap-2">
+              {!isLoadingCount && documents.length > 0 && (
+                <BulkAnalyzeButton
+                  documents={documents}
+                  token={token}
+                  onComplete={handleBulkAnalyzeComplete}
+                />
+              )}
+              <UploadDocumentDialog
+                studentId={studentId}
+                token={token}
+                onUploadComplete={onDocumentUploaded}
+              />
+            </div>
           </div>
         </CardHeader>
         <CardContent>

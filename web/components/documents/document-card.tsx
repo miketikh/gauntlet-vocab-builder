@@ -1,7 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { FileText, Download, Eye, Trash2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import {
+  FileText,
+  Download,
+  Eye,
+  Trash2,
+  RefreshCw,
+  AlertCircle,
+} from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,15 +16,20 @@ import { DocumentStatusBadge } from "./document-status-badge"
 import { DeleteDocumentDialog } from "./delete-document-dialog"
 import { downloadDocument } from "@/lib/download"
 import { formatDistanceToNow } from "@/lib/date-utils"
+import { useDocumentPolling } from "@/hooks/use-document-polling"
+import { getAuthenticatedClient } from "@/lib/api-client"
+import { toast } from "sonner"
 import type { components } from "@/types/api"
 
 type DocumentPublic = components["schemas"]["DocumentPublic"]
 type FileType = components["schemas"]["FileType"]
+type DocumentStatus = components["schemas"]["DocumentStatus"]
 
 interface DocumentCardProps {
   document: DocumentPublic
   token: string
   onDelete?: () => void
+  onStatusChange?: (document: DocumentPublic) => void
 }
 
 // Subject color mapping
@@ -37,9 +49,41 @@ const fileTypeIcons: Record<FileType, typeof FileText> = {
   txt: FileText,
 }
 
-export function DocumentCard({ document, token, onDelete }: DocumentCardProps) {
+export function DocumentCard({
+  document: initialDocument,
+  token,
+  onDelete,
+  onStatusChange,
+}: DocumentCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
+
+  // Use polling for real-time status updates
+  const { document: polledDocument, isPolling } = useDocumentPolling({
+    documentId: initialDocument.id,
+    token,
+    enabled: true,
+    onStatusChange: (status, doc) => {
+      // Notify parent component of status change
+      onStatusChange?.(doc)
+
+      // Show toast notification for status changes
+      if (status === "completed") {
+        toast.success("Analysis Complete", {
+          description: `${doc.title} has been analyzed successfully.`,
+        })
+      } else if (status === "failed") {
+        toast.error("Analysis Failed", {
+          description:
+            doc.error_message || "An error occurred during analysis.",
+        })
+      }
+    },
+  })
+
+  // Use polled document if available, otherwise use initial document
+  const document = polledDocument || initialDocument
 
   const FileIcon = fileTypeIcons[document.file_type] || FileText
 
@@ -71,6 +115,66 @@ export function DocumentCard({ document, token, onDelete }: DocumentCardProps) {
   const handleDeleteSuccess = () => {
     if (onDelete) {
       onDelete()
+    }
+  }
+
+  // Handle retry analysis
+  const handleRetryAnalysis = async () => {
+    setIsRetrying(true)
+    try {
+      // TODO: Uncomment when backend analyze endpoint is available (Story 3.4)
+      // const apiClient = getAuthenticatedClient(token)
+      // const { error: apiError } = await apiClient.POST(
+      //   "/api/documents/{document_id}/analyze",
+      //   {
+      //     params: {
+      //       path: {
+      //         document_id: document.id,
+      //       },
+      //     },
+      //   }
+      // )
+
+      // if (apiError) {
+      //   toast.error("Retry Failed", {
+      //     description: "Could not retry analysis. Please try again.",
+      //   })
+      //   return
+      // }
+
+      // Temporary: Show placeholder message
+      toast.info("Analysis Endpoint Not Available", {
+        description:
+          "The analysis endpoint will be available after Story 3.4 is complete.",
+      })
+
+      // TODO: Uncomment when endpoint is available
+      // toast.success("Analysis Restarted", {
+      //   description: "Document analysis has been restarted.",
+      // })
+    } catch (error) {
+      console.error("Error retrying analysis:", error)
+      toast.error("Retry Failed", {
+        description: "An unexpected error occurred.",
+      })
+    } finally {
+      setIsRetrying(false)
+    }
+  }
+
+  // Get status-specific message
+  const getStatusMessage = () => {
+    switch (document.status) {
+      case "pending":
+        return "Ready to analyze"
+      case "processing":
+        return "Analyzing document..."
+      case "completed":
+        return "Analysis complete"
+      case "failed":
+        return document.error_message || "Analysis failed"
+      default:
+        return null
     }
   }
 
@@ -107,37 +211,71 @@ export function DocumentCard({ document, token, onDelete }: DocumentCardProps) {
           </div>
 
           {/* Status Messages */}
-          {document.status === "pending" && (
-            <p className="text-xs text-muted-foreground">
-              Processing will begin soon
-            </p>
-          )}
-          {document.status === "processing" && (
-            <p className="text-xs text-muted-foreground">
-              Analyzing document...
-            </p>
-          )}
-          {document.status === "failed" && document.error_message && (
-            <p className="text-xs text-destructive">{document.error_message}</p>
-          )}
+          <div className="flex items-start gap-2">
+            {document.status === "pending" && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <AlertCircle className="h-3 w-3" />
+                <span>{getStatusMessage()}</span>
+              </div>
+            )}
+            {document.status === "processing" && (
+              <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                <span>{getStatusMessage()}</span>
+              </div>
+            )}
+            {document.status === "completed" && (
+              <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                <Eye className="h-3 w-3" />
+                <span>{getStatusMessage()}</span>
+              </div>
+            )}
+            {document.status === "failed" && (
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2 text-xs text-destructive">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>{getStatusMessage()}</span>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-wrap gap-2 pt-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleDownload}
               disabled={isDownloading}
-              className="flex-1"
+              className="flex-1 min-w-[120px]"
             >
               <Download className="h-4 w-4 mr-2" />
               {isDownloading ? "Downloading..." : "Download"}
             </Button>
 
             {canViewAnalysis && (
-              <Button variant="default" size="sm" className="flex-1">
+              <Button
+                variant="default"
+                size="sm"
+                className="flex-1 min-w-[120px]"
+              >
                 <Eye className="h-4 w-4 mr-2" />
                 View Analysis
+              </Button>
+            )}
+
+            {document.status === "failed" && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleRetryAnalysis}
+                disabled={isRetrying}
+                className="flex-1 min-w-[120px]"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${isRetrying ? "animate-spin" : ""}`}
+                />
+                {isRetrying ? "Retrying..." : "Retry Analysis"}
               </Button>
             )}
 
