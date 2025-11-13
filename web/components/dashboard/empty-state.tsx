@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -8,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { UserPlus, GraduationCap } from "lucide-react"
+import { GraduationCap } from "lucide-react"
+import { AddStudentDialog } from "@/components/students/add-student-dialog"
 
 interface EmptyStateProps {
   educatorName: string
@@ -46,14 +46,7 @@ export function EmptyState({ educatorName }: EmptyStateProps) {
               academic language skills.
             </p>
 
-            <Button size="lg" disabled>
-              <UserPlus className="mr-2 h-5 w-5" />
-              Add Your First Student
-            </Button>
-
-            <p className="text-xs text-muted-foreground mt-4">
-              This feature will be available soon
-            </p>
+            <AddStudentDialog />
           </div>
         </CardContent>
       </Card>
