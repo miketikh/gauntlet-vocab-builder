@@ -3,7 +3,7 @@ Database Service
 Handles SQLModel engine initialization and session management
 """
 import os
-from typing import Generator
+from typing import Generator, Optional
 from sqlmodel import SQLModel, create_engine, Session, select
 from dotenv import load_dotenv
 
@@ -52,13 +52,13 @@ def get_session() -> Generator[Session, None, None]:
 
 
 # Helper functions for common queries
-def get_educator_by_email(session: Session, email: str) -> Educator | None:
+def get_educator_by_email(session: Session, email: str) -> Optional[Educator]:
     """Get educator by email address"""
     statement = select(Educator).where(Educator.email == email)
     return session.exec(statement).first()
 
 
-def get_educator_by_id(session: Session, educator_id: int) -> Educator | None:
+def get_educator_by_id(session: Session, educator_id: int) -> Optional[Educator]:
     """Get educator by ID"""
     return session.get(Educator, educator_id)
 
@@ -69,7 +69,7 @@ def get_educator_students(session: Session, educator_id: int) -> list[Student]:
     return list(session.exec(statement).all())
 
 
-def get_student_by_id(session: Session, student_id: int) -> Student | None:
+def get_student_by_id(session: Session, student_id: int) -> Optional[Student]:
     """Get student by ID"""
     return session.get(Student, student_id)
 

@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 
 from models.database import Educator, Student, EducatorPublic
 from services.database import get_session, init_db
+from routers import auth
 
 app = FastAPI(
     title="Vocab Builder API",
@@ -19,10 +20,13 @@ app = FastAPI(
 # CORS configuration for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js dev server
-    allow_credentials=True,
+    allow_origins=[
+        "http://localhost:3000",  # Next.js dev server
+        "http://localhost:3001",  # Alternative dev port
+    ],
+    allow_credentials=True,  # Required for authenticated requests
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "Authorization"],  # Explicitly allow Authorization header
 )
 
 
@@ -36,6 +40,10 @@ async def startup_event():
     # Uncomment to auto-create tables (dev only)
     # init_db()
     print("API ready!")
+
+
+# Include routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 
 
 @app.get("/")

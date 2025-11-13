@@ -28,40 +28,36 @@ export const apiClient = createClient<paths>({
 })
 
 /**
- * Helper to set authentication token
- * Call this after user logs in to add Bearer token to all requests
+ * Helper to get API client with authentication token
+ * Call this when making authenticated requests
  *
  * @param token - JWT token from Supabase auth
  */
-export function setAuthToken(token: string | null) {
-  if (token) {
-    apiClient.headers.set("Authorization", `Bearer ${token}`)
-  } else {
-    apiClient.headers.delete("Authorization")
-  }
+export function getAuthenticatedClient(token: string) {
+  return createClient<paths>({
+    baseUrl: API_BASE_URL,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
 }
 
 /**
  * Example usage:
  *
- * // GET request
- * const { data, error } = await apiClient.GET("/api/students", {
- *   params: {
- *     query: { educator_id: 123 }
- *   }
- * });
+ * // GET request (public)
+ * const { data, error } = await apiClient.GET("/api/health");
  *
- * // POST request
- * const { data, error } = await apiClient.POST("/api/students", {
+ * // POST request (authenticated)
+ * const token = session.access_token;
+ * const client = getAuthenticatedClient(token);
+ * const { data, error } = await client.POST("/api/students", {
  *   body: {
  *     name: "John Doe",
  *     grade_level: 8
  *   }
  * });
- *
- * // With authentication
- * setAuthToken(session.access_token);
- * const { data, error } = await apiClient.GET("/api/me");
  */
 
 // Type exports for convenience
