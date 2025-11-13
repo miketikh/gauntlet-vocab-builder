@@ -169,6 +169,168 @@ The frontend generates TypeScript types from the OpenAPI schema:
 
 See `web/lib/api-client.ts` for usage examples.
 
+## Text Processing and Vocabulary Analysis
+
+### Overview
+
+The vocabulary analysis system provides NLP-powered text processing to extract, analyze, and categorize vocabulary from student documents. It uses spaCy for linguistic processing and maps words to grade-level standards.
+
+### Setup NLP Libraries
+
+1. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+2. **Download spaCy language model:**
+```bash
+python -m spacy download en_core_web_sm
+```
+
+### Components
+
+#### 1. Text Extraction (`services/text_extraction.py`)
+
+Extracts text from various file formats:
+- **PDF files** - Using pypdf library
+- **DOCX files** - Using python-docx library
+- **TXT files** - With automatic encoding detection
+
+Features:
+- Automatic file type detection
+- Graceful error handling for corrupt files
+- Text cleaning and normalization
+- Support for multiple text encodings
+
+Example usage:
+```python
+from services.text_extraction import extract_text_from_file
+
+# Extract from file bytes
+with open("document.pdf", "rb") as f:
+    content = f.read()
+
+text = extract_text_from_file(content, file_type="pdf")
+```
+
+#### 2. Word Processing (`services/word_processing.py`)
+
+NLP processing using spaCy:
+- **Tokenization** - Split text into words
+- **Lemmatization** - Convert to base form (running → run)
+- **POS tagging** - Part-of-speech analysis
+- **Stop word filtering** - Remove common words (the, and, is)
+- **Word frequency** - Count word occurrences
+
+Features:
+- Cached spaCy model (loaded once, reused)
+- Batch processing for efficiency
+- Configurable filtering options
+- Word normalization for lookup
+
+Example usage:
+```python
+from services.word_processing import (
+    extract_words_from_text,
+    calculate_word_frequency,
+    get_word_statistics
+)
+
+# Extract unique words
+words = extract_words_from_text(text)
+
+# Get word frequencies
+freq = calculate_word_frequency(text)
+# Returns: {"word": 5, "analyze": 3, ...}
+
+# Get statistics
+stats = get_word_statistics(text)
+# Returns: {"total_words": 100, "unique_words": 75, ...}
+```
+
+#### 3. Vocabulary Analysis (`services/vocabulary_analysis.py`)
+
+Grade-level vocabulary analysis:
+- Maps words to grade levels (6-12)
+- Categorizes words relative to student's grade
+- Calculates vocabulary profiles
+- Generates recommendations
+
+Features:
+- Batch database queries for efficiency
+- Category classification (below/at/above/unknown)
+- Grade distribution calculation
+- Challenging word identification
+
+Example usage:
+```python
+from services.vocabulary_analysis import analyze_vocabulary
+from services.database import get_session
+
+session = next(get_session())
+
+profile = analyze_vocabulary(
+    text=document_text,
+    student_grade_level=8,
+    session=session
+)
+
+print(f"Average grade level: {profile.statistics.average_grade_level}")
+print(f"Challenging words: {len(profile.challenging_words)}")
+```
+
+### Analysis Models
+
+Pydantic models in `models/analysis.py`:
+
+- **WordAnalysisResult** - Analysis for individual word
+- **VocabularyProfile** - Complete document analysis
+- **VocabularyStatistics** - Statistical summary
+- **GradeDistribution** - Word distribution across grades
+- **WordCategory** - Enum (below/at/above/unknown)
+
+### Testing
+
+Run the test script to verify functionality:
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Run test script
+python scripts/test_text_processing.py
+```
+
+The test script validates:
+- Text extraction from various formats
+- Word tokenization and frequency analysis
+- Vocabulary grade-level mapping
+- Complete analysis pipeline
+
+### Performance Considerations
+
+- **spaCy model caching** - Model loaded once and reused
+- **Batch database queries** - All words looked up in single query
+- **Target performance** - 5,000-word document in <10 seconds
+- **Memory limits** - Consider chunking for very large documents
+
+### Error Handling
+
+The system handles:
+- Unsupported file types → `UnsupportedFileTypeError`
+- Corrupt files → `TextExtractionError`
+- Empty documents → Validation error
+- Encoding issues → Automatic fallback
+- Missing spaCy model → Clear installation instructions
+
+### Integration with API
+
+Services are ready for Story 3.4 (Document Analysis Endpoint):
+- All functions accept proper parameters
+- Type hints throughout for IDE support
+- Proper error responses
+- Async-ready design
+
 ## Data Import Scripts
 
 ### Import Grade-Level Vocabulary Data
