@@ -6,13 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog"
 import { DocumentList } from "@/components/documents/document-list"
 import { BulkAnalyzeButton } from "@/components/documents/bulk-analyze-button"
+import { VocabularyProfile } from "@/components/vocabulary/vocabulary-profile"
 import { getAuthenticatedClient } from "@/lib/api-client"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { components } from "@/types/api"
 
 type DocumentPublic = components["schemas"]["DocumentPublic"]
 
 interface StudentSectionsProps {
   studentId: number
+  studentGradeLevel: number
   token: string
   onDocumentUploaded?: () => void
   refreshTrigger?: number
@@ -20,6 +29,7 @@ interface StudentSectionsProps {
 
 export function StudentSections({
   studentId,
+  studentGradeLevel,
   token,
   onDocumentUploaded,
   refreshTrigger = 0,
@@ -27,6 +37,10 @@ export function StudentSections({
   const [documentCount, setDocumentCount] = useState<number>(0)
   const [documents, setDocuments] = useState<DocumentPublic[]>([])
   const [isLoadingCount, setIsLoadingCount] = useState(true)
+  const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(
+    null
+  )
+  const [analysisRefreshTrigger, setAnalysisRefreshTrigger] = useState(0)
 
   // Fetch document count and list for display in header
   useEffect(() => {
@@ -47,6 +61,12 @@ export function StudentSections({
         if (data) {
           setDocumentCount(data.length)
           setDocuments(data)
+
+          // Auto-select first completed document
+          const completedDoc = data.find((doc) => doc.status === "completed")
+          if (completedDoc && !selectedDocumentId) {
+            setSelectedDocumentId(completedDoc.id)
+          }
         }
       } catch (error) {
         console.error("Error fetching document count:", error)
@@ -56,13 +76,19 @@ export function StudentSections({
     }
 
     fetchDocumentCount()
-  }, [studentId, token, refreshTrigger])
+  }, [studentId, token, refreshTrigger, selectedDocumentId])
 
   // Handle bulk analysis complete
   const handleBulkAnalyzeComplete = () => {
-    // Refresh document list
+    // Refresh document list and analysis
+    setAnalysisRefreshTrigger((prev) => prev + 1)
     onDocumentUploaded?.()
   }
+
+  // Get completed documents for dropdown
+  const completedDocuments = documents.filter(
+    (doc) => doc.status === "completed"
+  )
 
   return (
     <div className="space-y-6">
@@ -107,34 +133,61 @@ export function StudentSections({
       {/* Vocabulary Profile Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Vocabulary Analysis
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Vocabulary Analysis
+            </CardTitle>
+            {completedDocuments.length > 0 && (
+              <Select
+                value={selectedDocumentId?.toString() || ""}
+                onValueChange={(value) => setSelectedDocumentId(Number(value))}
+              >
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Select a document" />
+                </SelectTrigger>
+                <SelectContent>
+                  {completedDocuments.map((doc) => (
+                    <SelectItem key={doc.id} value={doc.id.toString()}>
+                      {doc.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-3 mb-4">
-              <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          {completedDocuments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-3 mb-4">
+                <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                No analyzed documents yet
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Upload and analyze a document to see vocabulary statistics, word
+                frequency analysis, and reading level metrics.
+              </p>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
-              Upload a document to see vocabulary analysis
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              Once documents are uploaded, you&apos;ll see detailed vocabulary
-              statistics, word frequency analysis, and reading level metrics
-              here.
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <AlertCircle className="h-3 w-3" />
-              <span>Analysis features coming in Story 3.5</span>
+          ) : selectedDocumentId ? (
+            <VocabularyProfile
+              documentId={selectedDocumentId}
+              studentGradeLevel={studentGradeLevel}
+              token={token}
+              refreshTrigger={analysisRefreshTrigger}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-3 mb-4">
+                <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Select a document to view its vocabulary analysis
+              </p>
             </div>
-          </div>
-
-          {/* Placeholder for future charts and stats */}
-          <div className="hidden">
-            {/* Vocabulary charts and metrics will be rendered here */}
-          </div>
+          )}
         </CardContent>
       </Card>
 

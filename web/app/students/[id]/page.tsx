@@ -231,6 +231,7 @@ export default function StudentDetailPage() {
         {accessToken && (
           <StudentSections
             studentId={student.id}
+            studentGradeLevel={student.grade_level}
             token={accessToken}
             onDocumentUploaded={handleDocumentUploaded}
             refreshTrigger={refreshTrigger}

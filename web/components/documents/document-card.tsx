@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DocumentStatusBadge } from "./document-status-badge"
 import { DeleteDocumentDialog } from "./delete-document-dialog"
+import { AnalyzeDocumentButton } from "@/components/vocabulary/analyze-document-button"
 import { downloadDocument } from "@/lib/download"
 import { formatDistanceToNow } from "@/lib/date-utils"
 import { useDocumentPolling } from "@/hooks/use-document-polling"
@@ -57,7 +58,6 @@ export function DocumentCard({
 }: DocumentCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [isRetrying, setIsRetrying] = useState(false)
 
   // Use polling for real-time status updates
   const { document: polledDocument, isPolling } = useDocumentPolling({
@@ -96,8 +96,9 @@ export function DocumentCard({
     subjectColors[document.subject || ""] ||
     "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
 
-  // Determine if we can view analysis
+  // Determine if we can view analysis or analyze
   const canViewAnalysis = document.status === "completed"
+  const canAnalyze = document.status === "pending"
 
   // Handle download
   const handleDownload = async () => {
@@ -118,48 +119,11 @@ export function DocumentCard({
     }
   }
 
-  // Handle retry analysis
-  const handleRetryAnalysis = async () => {
-    setIsRetrying(true)
-    try {
-      // TODO: Uncomment when backend analyze endpoint is available (Story 3.4)
-      // const apiClient = getAuthenticatedClient(token)
-      // const { error: apiError } = await apiClient.POST(
-      //   "/api/documents/{document_id}/analyze",
-      //   {
-      //     params: {
-      //       path: {
-      //         document_id: document.id,
-      //       },
-      //     },
-      //   }
-      // )
-
-      // if (apiError) {
-      //   toast.error("Retry Failed", {
-      //     description: "Could not retry analysis. Please try again.",
-      //   })
-      //   return
-      // }
-
-      // Temporary: Show placeholder message
-      toast.info("Analysis Endpoint Not Available", {
-        description:
-          "The analysis endpoint will be available after Story 3.4 is complete.",
-      })
-
-      // TODO: Uncomment when endpoint is available
-      // toast.success("Analysis Restarted", {
-      //   description: "Document analysis has been restarted.",
-      // })
-    } catch (error) {
-      console.error("Error retrying analysis:", error)
-      toast.error("Retry Failed", {
-        description: "An unexpected error occurred.",
-      })
-    } finally {
-      setIsRetrying(false)
-    }
+  // Handle analysis complete
+  const handleAnalysisComplete = () => {
+    // Status will be updated by polling hook
+    // Notify parent component if needed
+    onStatusChange?.(document)
   }
 
   // Get status-specific message
@@ -253,6 +217,14 @@ export function DocumentCard({
               {isDownloading ? "Downloading..." : "Download"}
             </Button>
 
+            {canAnalyze && (
+              <AnalyzeDocumentButton
+                documentId={document.id}
+                token={token}
+                onAnalysisComplete={handleAnalysisComplete}
+              />
+            )}
+
             {canViewAnalysis && (
               <Button
                 variant="default"
@@ -265,18 +237,11 @@ export function DocumentCard({
             )}
 
             {document.status === "failed" && (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleRetryAnalysis}
-                disabled={isRetrying}
-                className="flex-1 min-w-[120px]"
-              >
-                <RefreshCw
-                  className={`h-4 w-4 mr-2 ${isRetrying ? "animate-spin" : ""}`}
-                />
-                {isRetrying ? "Retrying..." : "Retry Analysis"}
-              </Button>
+              <AnalyzeDocumentButton
+                documentId={document.id}
+                token={token}
+                onAnalysisComplete={handleAnalysisComplete}
+              />
             )}
 
             <Button
