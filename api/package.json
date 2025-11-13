@@ -1,0 +1,32 @@
+{
+  "name": "vocab-builder-api",
+  "version": "1.0.0",
+  "description": "Node.js tooling for Drizzle ORM database management",
+  "type": "module",
+  "scripts": {
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "db:drop": "drizzle-kit drop"
+  },
+  "keywords": [
+    "drizzle",
+    "orm",
+    "database",
+    "supabase",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "drizzle-kit": "^0.30.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.4",
+    "postgres": "^3.4.3",
+    "dotenv": "^16.3.1"
+  }
+}

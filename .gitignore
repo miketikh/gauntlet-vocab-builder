@@ -50,6 +50,11 @@ api/build/
 api/dist/
 api/*.egg-info/
 
+# Node.js in api/ (for Drizzle ORM)
+api/node_modules/
+api/package-lock.json
+api/dist/
+
 # === Shared/Root level ===
 # env files (can opt-in for committing if needed)
 .env*
