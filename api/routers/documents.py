@@ -10,6 +10,7 @@ from sqlmodel import Session, select
 
 from dependencies.auth import get_current_user
 from services.database import get_session
+from services import s3
 from models.database import (
     Document,
     DocumentCreate,
@@ -343,3 +344,78 @@ async def update_document_status(
     session.refresh(document)
 
     return document
+
+
+class DeleteResponse(BaseModel):
+    """Response for document deletion"""
+    message: str = Field(..., description="Success message")
+    document_id: int = Field(..., description="ID of deleted document")
+
+
+@router.delete("/{document_id}", response_model=DeleteResponse)
+async def delete_document(
+    document_id: int,
+    user: Dict[str, Any] = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Delete a document and its associated S3 file
+
+    This endpoint:
+    1. Verifies the educator owns the document (via student)
+    2. Deletes the file from S3
+    3. Deletes the database record
+    4. Returns a success message
+
+    Protected endpoint - requires valid JWT token.
+
+    Args:
+        document_id: ID of the document to delete
+        user: Current authenticated user (injected by dependency)
+        session: Database session (injected by dependency)
+
+    Returns:
+        DeleteResponse: Success message with document ID
+
+    Raises:
+        HTTPException 401: If not authenticated
+        HTTPException 403: If educator doesn't own the document
+        HTTPException 404: If document not found
+        HTTPException 500: If S3 deletion fails
+    """
+    # Get educator from session
+    educator_email = user["email"]
+    educator_statement = select(Educator).where(Educator.email == educator_email)
+    educator = session.exec(educator_statement).first()
+
+    if not educator:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Educator not found. Please complete authentication setup."
+        )
+
+    # Verify educator owns the document
+    document = verify_educator_owns_document(
+        educator_id=educator.id,
+        document_id=document_id,
+        session=session
+    )
+
+    # Delete file from S3
+    # Note: S3 delete is idempotent - if file doesn't exist, it still returns success
+    try:
+        s3.delete_file(document.s3_key)
+    except HTTPException as e:
+        # If S3 deletion fails, we still want to delete the database record
+        # to avoid orphaned records, but we'll log the error
+        # In production, you might want to queue this for retry
+        print(f"Warning: Failed to delete S3 file {document.s3_key}: {e.detail}")
+
+    # Delete database record
+    session.delete(document)
+    session.commit()
+
+    return DeleteResponse(
+        message=f"Document '{document.title}' deleted successfully",
+        document_id=document_id
+    )

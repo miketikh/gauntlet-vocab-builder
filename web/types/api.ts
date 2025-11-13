@@ -406,7 +406,33 @@ export interface paths {
     get: operations["get_document_api_documents__document_id__get"]
     put?: never
     post?: never
-    delete?: never
+    /**
+     * Delete Document
+     * @description Delete a document and its associated S3 file
+     *
+     *     This endpoint:
+     *     1. Verifies the educator owns the document (via student)
+     *     2. Deletes the file from S3
+     *     3. Deletes the database record
+     *     4. Returns a success message
+     *
+     *     Protected endpoint - requires valid JWT token.
+     *
+     *     Args:
+     *         document_id: ID of the document to delete
+     *         user: Current authenticated user (injected by dependency)
+     *         session: Database session (injected by dependency)
+     *
+     *     Returns:
+     *         DeleteResponse: Success message with document ID
+     *
+     *     Raises:
+     *         HTTPException 401: If not authenticated
+     *         HTTPException 403: If educator doesn't own the document
+     *         HTTPException 404: If document not found
+     *         HTTPException 500: If S3 deletion fails
+     */
+    delete: operations["delete_document_api_documents__document_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -543,6 +569,22 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /**
+     * DeleteResponse
+     * @description Response for document deletion
+     */
+    DeleteResponse: {
+      /**
+       * Message
+       * @description Success message
+       */
+      message: string
+      /**
+       * Document Id
+       * @description ID of deleted document
+       */
+      document_id: number
+    }
     /**
      * DocumentCreate
      * @description Data required to create a document
@@ -1085,6 +1127,37 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["DocumentPublic"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_document_api_documents__document_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        document_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DeleteResponse"]
         }
       }
       /** @description Validation Error */

@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Download, Eye } from "lucide-react"
+import { FileText, Download, Eye, Trash2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DocumentStatusBadge } from "./document-status-badge"
+import { DeleteDocumentDialog } from "./delete-document-dialog"
 import { downloadDocument } from "@/lib/download"
 import { formatDistanceToNow } from "@/lib/date-utils"
 import type { components } from "@/types/api"
@@ -16,6 +17,7 @@ type FileType = components["schemas"]["FileType"]
 interface DocumentCardProps {
   document: DocumentPublic
   token: string
+  onDelete?: () => void
 }
 
 // Subject color mapping
@@ -35,8 +37,9 @@ const fileTypeIcons: Record<FileType, typeof FileText> = {
   txt: FileText,
 }
 
-export function DocumentCard({ document, token }: DocumentCardProps) {
+export function DocumentCard({ document, token, onDelete }: DocumentCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const FileIcon = fileTypeIcons[document.file_type] || FileText
 
@@ -61,6 +64,13 @@ export function DocumentCard({ document, token }: DocumentCardProps) {
       await downloadDocument(document.id, document.s3_key, filename, token)
     } finally {
       setIsDownloading(false)
+    }
+  }
+
+  // Handle delete success
+  const handleDeleteSuccess = () => {
+    if (onDelete) {
+      onDelete()
     }
   }
 
@@ -130,9 +140,28 @@ export function DocumentCard({ document, token }: DocumentCardProps) {
                 View Analysis
               </Button>
             )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDeleteDialog(true)}
+              className="text-muted-foreground hover:text-destructive"
+              title="Delete document"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </CardContent>
+
+      {/* Delete confirmation dialog */}
+      <DeleteDocumentDialog
+        document={document}
+        token={token}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onDeleteSuccess={handleDeleteSuccess}
+      />
     </Card>
   )
 }
