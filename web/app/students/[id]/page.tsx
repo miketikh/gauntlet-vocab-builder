@@ -105,6 +105,7 @@ export default function StudentDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
   const supabase = createClient()
 
   useEffect(() => {
@@ -194,8 +195,8 @@ export default function StudentDetailPage() {
 
   const handleDocumentUploaded = () => {
     // Callback for when a document is uploaded
-    // In Story 2.5, this will refresh the document list
-    console.log("Document uploaded successfully!")
+    // Increment refresh trigger to refresh document list
+    setRefreshTrigger((prev) => prev + 1)
   }
 
   // Loading state
@@ -232,6 +233,7 @@ export default function StudentDetailPage() {
             studentId={student.id}
             token={accessToken}
             onDocumentUploaded={handleDocumentUploaded}
+            refreshTrigger={refreshTrigger}
           />
         )}
       </div>

@@ -296,6 +296,164 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/documents": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Create Document
+     * @description Create document metadata after S3 upload
+     *
+     *     This endpoint should be called AFTER successfully uploading a file to S3.
+     *     It creates a database record linking the document to a student.
+     *
+     *     Workflow:
+     *     1. Frontend gets presigned URL from /api/s3/upload-url
+     *     2. Frontend uploads file directly to S3 using presigned URL
+     *     3. Frontend calls this endpoint to save document metadata
+     *     4. Document status starts as 'pending' (analysis happens later)
+     *
+     *     Protected endpoint - requires valid JWT token.
+     *
+     *     Args:
+     *         document: Document metadata (student_id, title, s3_key, file_type, subject)
+     *         user: Current authenticated user (injected by dependency)
+     *         session: Database session (injected by dependency)
+     *
+     *     Returns:
+     *         DocumentPublic: Created document with metadata
+     *
+     *     Raises:
+     *         HTTPException 401: If not authenticated
+     *         HTTPException 403: If educator doesn't own the student
+     *         HTTPException 404: If student not found
+     */
+    post: operations["create_document_api_documents_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/documents/students/{student_id}/documents": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * List Student Documents
+     * @description Get all documents for a specific student
+     *
+     *     Returns documents sorted by upload date (newest first).
+     *
+     *     Protected endpoint - requires valid JWT token.
+     *
+     *     Args:
+     *         student_id: ID of the student
+     *         user: Current authenticated user (injected by dependency)
+     *         session: Database session (injected by dependency)
+     *
+     *     Returns:
+     *         List[DocumentPublic]: List of documents for the student
+     *
+     *     Raises:
+     *         HTTPException 401: If not authenticated
+     *         HTTPException 403: If educator doesn't own the student
+     *         HTTPException 404: If student not found
+     */
+    get: operations["list_student_documents_api_documents_students__student_id__documents_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/documents/{document_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Document
+     * @description Get a single document by ID
+     *
+     *     Protected endpoint - requires valid JWT token.
+     *
+     *     Args:
+     *         document_id: ID of the document
+     *         user: Current authenticated user (injected by dependency)
+     *         session: Database session (injected by dependency)
+     *
+     *     Returns:
+     *         DocumentPublic: Document metadata
+     *
+     *     Raises:
+     *         HTTPException 401: If not authenticated
+     *         HTTPException 403: If educator doesn't own the document
+     *         HTTPException 404: If document not found
+     */
+    get: operations["get_document_api_documents__document_id__get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/documents/{document_id}/status": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Update Document Status
+     * @description Update document processing status
+     *
+     *     Used by background processing workers to update document status
+     *     as it moves through the analysis pipeline:
+     *     - PENDING -> PROCESSING (when analysis starts)
+     *     - PROCESSING -> COMPLETED (when analysis finishes)
+     *     - PROCESSING -> FAILED (if analysis fails)
+     *
+     *     Protected endpoint - requires valid JWT token.
+     *
+     *     Args:
+     *         document_id: ID of the document
+     *         status_update: New status and optional error message
+     *         user: Current authenticated user (injected by dependency)
+     *         session: Database session (injected by dependency)
+     *
+     *     Returns:
+     *         DocumentPublic: Updated document metadata
+     *
+     *     Raises:
+     *         HTTPException 401: If not authenticated
+     *         HTTPException 403: If educator doesn't own the document
+     *         HTTPException 404: If document not found
+     */
+    patch: operations["update_document_status_api_documents__document_id__status_patch"]
+    trace?: never
+  }
   "/": {
     parameters: {
       query?: never
@@ -386,6 +544,65 @@ export type webhooks = Record<string, never>
 export interface components {
   schemas: {
     /**
+     * DocumentCreate
+     * @description Data required to create a document
+     */
+    DocumentCreate: {
+      /** Student Id */
+      student_id: number
+      /** Title */
+      title: string
+      /** S3 Key */
+      s3_key: string
+      file_type: components["schemas"]["FileType"]
+      /** Subject */
+      subject?: string | null
+    }
+    /**
+     * DocumentPublic
+     * @description Public document data for API responses
+     */
+    DocumentPublic: {
+      /** Id */
+      id: number
+      /** Student Id */
+      student_id: number
+      /** Title */
+      title: string
+      /** S3 Key */
+      s3_key: string
+      /**
+       * Upload Date
+       * Format: date-time
+       */
+      upload_date: string
+      file_type: components["schemas"]["FileType"]
+      /** Subject */
+      subject: string | null
+      status: components["schemas"]["DocumentStatus"]
+      /** Error Message */
+      error_message: string | null
+    }
+    /**
+     * DocumentStatus
+     * @description Document processing status
+     * @enum {string}
+     */
+    DocumentStatus: "pending" | "processing" | "completed" | "failed"
+    /**
+     * DocumentStatusUpdate
+     * @description Request to update document status
+     */
+    DocumentStatusUpdate: {
+      /** @description New document status */
+      status: components["schemas"]["DocumentStatus"]
+      /**
+       * Error Message
+       * @description Error message if status is FAILED
+       */
+      error_message?: string | null
+    }
+    /**
      * DownloadUrlRequest
      * @description Request to generate a presigned download URL
      * @example {
@@ -438,6 +655,12 @@ export interface components {
        */
       created_at: string
     }
+    /**
+     * FileType
+     * @description Supported file types for document upload
+     * @enum {string}
+     */
+    FileType: "pdf" | "docx" | "txt"
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -767,6 +990,136 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["StudentPublic"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  create_document_api_documents_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DocumentCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentPublic"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_student_documents_api_documents_students__student_id__documents_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        student_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentPublic"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_document_api_documents__document_id__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        document_id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentPublic"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_document_status_api_documents__document_id__status_patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        document_id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DocumentStatusUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["DocumentPublic"]
         }
       }
       /** @description Validation Error */

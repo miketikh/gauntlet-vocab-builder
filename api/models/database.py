@@ -139,6 +139,7 @@ class DocumentPublic(SQLModel):
     id: int
     student_id: int
     title: str
+    s3_key: str
     upload_date: datetime
     file_type: FileType
     subject: Optional[str]

@@ -1,60 +1,85 @@
 "use client"
 
-import {
-  FileText,
-  Upload,
-  BarChart3,
-  Lightbulb,
-  AlertCircle,
-} from "lucide-react"
+import { useState, useEffect } from "react"
+import { FileText, BarChart3, Lightbulb, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog"
+import { DocumentList } from "@/components/documents/document-list"
+import { getAuthenticatedClient } from "@/lib/api-client"
 
 interface StudentSectionsProps {
   studentId: number
   token: string
   onDocumentUploaded?: () => void
+  refreshTrigger?: number
 }
 
 export function StudentSections({
   studentId,
   token,
   onDocumentUploaded,
+  refreshTrigger = 0,
 }: StudentSectionsProps) {
+  const [documentCount, setDocumentCount] = useState<number>(0)
+  const [isLoadingCount, setIsLoadingCount] = useState(true)
+
+  // Fetch document count for display in header
+  useEffect(() => {
+    async function fetchDocumentCount() {
+      try {
+        setIsLoadingCount(true)
+        const apiClient = getAuthenticatedClient(token)
+        const { data } = await apiClient.GET(
+          "/api/documents/students/{student_id}/documents",
+          {
+            params: {
+              path: {
+                student_id: studentId,
+              },
+            },
+          }
+        )
+        if (data) {
+          setDocumentCount(data.length)
+        }
+      } catch (error) {
+        console.error("Error fetching document count:", error)
+      } finally {
+        setIsLoadingCount(false)
+      }
+    }
+
+    fetchDocumentCount()
+  }, [studentId, token, refreshTrigger])
+
   return (
     <div className="space-y-6">
       {/* Documents Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Uploaded Documents
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-muted p-3 mb-4">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">
-              No documents uploaded yet
-            </h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-md">
-              Upload student essays, transcripts, or other writing samples to
-              begin vocabulary analysis and get personalized recommendations.
-            </p>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Uploaded Documents
+              {!isLoadingCount && documentCount > 0 && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  ({documentCount})
+                </span>
+              )}
+            </CardTitle>
             <UploadDocumentDialog
               studentId={studentId}
               token={token}
               onUploadComplete={onDocumentUploaded}
             />
           </div>
-
-          {/* Grid ready for document cards - hidden when empty */}
-          <div className="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Document cards will be rendered here */}
-          </div>
+        </CardHeader>
+        <CardContent>
+          <DocumentList
+            studentId={studentId}
+            token={token}
+            refreshTrigger={refreshTrigger}
+          />
         </CardContent>
       </Card>
 

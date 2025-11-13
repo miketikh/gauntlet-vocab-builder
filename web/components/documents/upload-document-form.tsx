@@ -79,6 +79,11 @@ export function UploadDocumentForm({
     }
 
     const file = files[0]
+    if (!file) {
+      setSelectedFile(null)
+      return
+    }
+
     const validation = validateFile(file)
 
     if (!validation.valid) {
