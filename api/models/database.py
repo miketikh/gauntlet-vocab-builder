@@ -5,7 +5,7 @@ Defines database schema using SQLModel (SQLAlchemy + Pydantic)
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List
-from sqlmodel import Field, SQLModel, Relationship, Column, Enum as SQLEnum
+from sqlmodel import Field, SQLModel, Relationship, Column, Enum as SQLEnum, JSON
 
 
 # Enums
@@ -87,6 +87,58 @@ class Document(SQLModel, table=True):
 
     # Relationships
     student: Student = Relationship(back_populates="documents")
+    analysis_results: List["AnalysisResult"] = Relationship(back_populates="document")
+
+
+class AnalysisResult(SQLModel, table=True):
+    """
+    AnalysisResult table - stores vocabulary analysis results for documents
+    Linked to documents table via document_id
+    """
+    __tablename__ = "analysis_results"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    document_id: int = Field(foreign_key="documents.id", index=True)
+    analyzed_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # VocabularyProfile data stored as JSON
+    student_grade_level: int = Field(ge=6, le=12, description="Student's grade level at time of analysis")
+
+    # Statistics
+    total_words: int = Field(ge=0, description="Total word count (including duplicates)")
+    unique_words: int = Field(ge=0, description="Count of unique words")
+    analyzed_words: int = Field(ge=0, description="Words found in grade_words database")
+    unknown_words: int = Field(ge=0, description="Words not found in database")
+    unknown_percentage: float = Field(ge=0.0, le=1.0, description="Percentage of words not in database")
+    average_grade_level: Optional[float] = Field(default=None, description="Weighted average grade level")
+    below_grade_count: int = Field(ge=0, description="Number of words below student's grade")
+    at_grade_count: int = Field(ge=0, description="Number of words at student's grade")
+    above_grade_count: int = Field(ge=0, description="Number of words above student's grade")
+
+    # Grade distribution (stored as JSON)
+    grade_distribution: dict = Field(
+        default={},
+        sa_column=Column(JSON),
+        description="Distribution of words across grade levels"
+    )
+
+    # Challenging words and detailed analysis (stored as JSON)
+    challenging_words: list = Field(
+        default=[],
+        sa_column=Column(JSON),
+        description="List of challenging words above student's grade level"
+    )
+
+    word_details: list = Field(
+        default=[],
+        sa_column=Column(JSON),
+        description="Detailed analysis of all unique words"
+    )
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    document: Document = Relationship(back_populates="analysis_results")
 
 
 class GradeWord(SQLModel, table=True):
@@ -206,3 +258,23 @@ class DocumentUpdate(SQLModel):
     """Data for updating a document"""
     status: Optional[DocumentStatus] = None
     error_message: Optional[str] = None
+
+
+class AnalysisResultPublic(SQLModel):
+    """Public analysis result data for API responses"""
+    id: int
+    document_id: int
+    analyzed_at: datetime
+    student_grade_level: int
+    total_words: int
+    unique_words: int
+    analyzed_words: int
+    unknown_words: int
+    unknown_percentage: float
+    average_grade_level: Optional[float]
+    below_grade_count: int
+    at_grade_count: int
+    above_grade_count: int
+    grade_distribution: dict
+    challenging_words: list
+    word_details: list

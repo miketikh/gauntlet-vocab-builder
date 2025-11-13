@@ -4,6 +4,8 @@ Endpoints for managing document metadata after S3 upload
 """
 from typing import Dict, Any, List, Optional
 from datetime import datetime
+import logging
+import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlmodel import Session, select
@@ -11,6 +13,9 @@ from sqlmodel import Session, select
 from dependencies.auth import get_current_user
 from services.database import get_session
 from services import s3
+from services.text_extraction import extract_text_from_file, TextExtractionError, UnsupportedFileTypeError
+from services.word_processing import extract_words_from_text, WordProcessingError
+from services.vocabulary_analysis import analyze_vocabulary, VocabularyAnalysisError
 from models.database import (
     Document,
     DocumentCreate,
@@ -19,8 +24,13 @@ from models.database import (
     DocumentStatus,
     FileType,
     Student,
-    Educator
+    Educator,
+    AnalysisResult,
+    AnalysisResultPublic
 )
+from models.analysis import VocabularyProfile
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -419,3 +429,296 @@ async def delete_document(
         message=f"Document '{document.title}' deleted successfully",
         document_id=document_id
     )
+
+
+@router.post("/{document_id}/analyze", response_model=VocabularyProfile)
+async def analyze_document(
+    document_id: int,
+    user: Dict[str, Any] = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Analyze document vocabulary and generate vocabulary profile
+
+    This endpoint performs the full analysis pipeline:
+    1. Verifies educator owns the document
+    2. Downloads file from S3
+    3. Extracts text from the file
+    4. Processes and lemmatizes words
+    5. Maps words to grade levels
+    6. Calculates vocabulary profile
+    7. Saves analysis results to database
+    8. Updates document status to 'completed'
+
+    The analysis runs synchronously (for MVP). For production, consider
+    using a background task queue (Celery, RQ, etc.).
+
+    Protected endpoint - requires valid JWT token.
+
+    Args:
+        document_id: ID of the document to analyze
+        user: Current authenticated user (injected by dependency)
+        session: Database session (injected by dependency)
+
+    Returns:
+        VocabularyProfile: Complete vocabulary analysis results
+
+    Raises:
+        HTTPException 401: If not authenticated
+        HTTPException 403: If educator doesn't own the document
+        HTTPException 404: If document not found or student not found
+        HTTPException 500: If analysis fails (file download, text extraction, etc.)
+    """
+    # Get educator from session
+    educator_email = user["email"]
+    educator_statement = select(Educator).where(Educator.email == educator_email)
+    educator = session.exec(educator_statement).first()
+
+    if not educator:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Educator not found. Please complete authentication setup."
+        )
+
+    # Verify educator owns the document
+    document = verify_educator_owns_document(
+        educator_id=educator.id,
+        document_id=document_id,
+        session=session
+    )
+
+    # Get student information for grade level
+    student_statement = select(Student).where(Student.id == document.student_id)
+    student = session.exec(student_statement).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student not found for this document"
+        )
+
+    try:
+        # Step 1: Update document status to 'processing'
+        logger.info(f"Starting analysis for document {document_id}")
+        document.status = DocumentStatus.PROCESSING
+        document.error_message = None
+        document.updated_at = datetime.utcnow()
+        session.add(document)
+        session.commit()
+
+        # Step 2: Download file from S3
+        logger.info(f"Downloading file from S3: {document.s3_key}")
+        try:
+            download_url = s3.generate_presigned_download_url(document.s3_key)
+            response = requests.get(download_url, timeout=60)
+            response.raise_for_status()
+            file_content = response.content
+            logger.info(f"Downloaded {len(file_content)} bytes from S3")
+        except requests.RequestException as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to download file from S3: {str(e)}"
+            )
+
+        # Step 3: Extract text from file
+        logger.info(f"Extracting text from {document.file_type} file")
+        try:
+            text = extract_text_from_file(
+                file_content=file_content,
+                file_type=document.file_type.value,
+                filename=document.title
+            )
+            logger.info(f"Extracted {len(text)} characters of text")
+        except UnsupportedFileTypeError as e:
+            document.status = DocumentStatus.FAILED
+            document.error_message = f"Unsupported file type: {str(e)}"
+            document.updated_at = datetime.utcnow()
+            session.add(document)
+            session.commit()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e)
+            )
+        except TextExtractionError as e:
+            document.status = DocumentStatus.FAILED
+            document.error_message = f"Text extraction failed: {str(e)}"
+            document.updated_at = datetime.utcnow()
+            session.add(document)
+            session.commit()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to extract text: {str(e)}"
+            )
+
+        # Step 4: Analyze vocabulary
+        logger.info(f"Analyzing vocabulary for student grade {student.grade_level}")
+        try:
+            profile = analyze_vocabulary(
+                text=text,
+                student_grade_level=student.grade_level,
+                session=session
+            )
+            logger.info(
+                f"Analysis complete: {profile.statistics.unique_words} unique words, "
+                f"avg grade level: {profile.statistics.average_grade_level}"
+            )
+        except (WordProcessingError, VocabularyAnalysisError) as e:
+            document.status = DocumentStatus.FAILED
+            document.error_message = f"Vocabulary analysis failed: {str(e)}"
+            document.updated_at = datetime.utcnow()
+            session.add(document)
+            session.commit()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to analyze vocabulary: {str(e)}"
+            )
+
+        # Step 5: Save analysis results to database
+        logger.info("Saving analysis results to database")
+        analysis_result = AnalysisResult(
+            document_id=document.id,
+            analyzed_at=datetime.utcnow(),
+            student_grade_level=profile.student_grade_level,
+            total_words=profile.statistics.total_words,
+            unique_words=profile.statistics.unique_words,
+            analyzed_words=profile.statistics.analyzed_words,
+            unknown_words=profile.statistics.unknown_words,
+            unknown_percentage=profile.statistics.unknown_percentage,
+            average_grade_level=profile.statistics.average_grade_level,
+            below_grade_count=profile.statistics.below_grade_count,
+            at_grade_count=profile.statistics.at_grade_count,
+            above_grade_count=profile.statistics.above_grade_count,
+            grade_distribution=profile.grade_distribution.to_dict(),
+            challenging_words=[word.dict() for word in profile.challenging_words],
+            word_details=[word.dict() for word in profile.word_details],
+            created_at=datetime.utcnow()
+        )
+
+        session.add(analysis_result)
+
+        # Step 6: Update document status to 'completed'
+        document.status = DocumentStatus.COMPLETED
+        document.updated_at = datetime.utcnow()
+        session.add(document)
+
+        session.commit()
+        session.refresh(analysis_result)
+
+        logger.info(f"Analysis saved with ID {analysis_result.id}")
+
+        return profile
+
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        # Catch any unexpected errors
+        logger.error(f"Unexpected error during analysis: {str(e)}", exc_info=True)
+        document.status = DocumentStatus.FAILED
+        document.error_message = f"Unexpected error: {str(e)}"
+        document.updated_at = datetime.utcnow()
+        session.add(document)
+        session.commit()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Analysis failed: {str(e)}"
+        )
+
+
+@router.get("/{document_id}/analysis", response_model=VocabularyProfile)
+async def get_document_analysis(
+    document_id: int,
+    user: Dict[str, Any] = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Get saved analysis results for a document
+
+    Returns the most recent vocabulary analysis for the specified document.
+    If the document has not been analyzed yet, returns 404.
+
+    Protected endpoint - requires valid JWT token.
+
+    Args:
+        document_id: ID of the document
+        user: Current authenticated user (injected by dependency)
+        session: Database session (injected by dependency)
+
+    Returns:
+        VocabularyProfile: Saved vocabulary analysis results
+
+    Raises:
+        HTTPException 401: If not authenticated
+        HTTPException 403: If educator doesn't own the document
+        HTTPException 404: If document not found or not analyzed yet
+    """
+    # Get educator from session
+    educator_email = user["email"]
+    educator_statement = select(Educator).where(Educator.email == educator_email)
+    educator = session.exec(educator_statement).first()
+
+    if not educator:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Educator not found. Please complete authentication setup."
+        )
+
+    # Verify educator owns the document
+    document = verify_educator_owns_document(
+        educator_id=educator.id,
+        document_id=document_id,
+        session=session
+    )
+
+    # Get most recent analysis result for this document
+    statement = (
+        select(AnalysisResult)
+        .where(AnalysisResult.document_id == document_id)
+        .order_by(AnalysisResult.analyzed_at.desc())
+    )
+    analysis = session.exec(statement).first()
+
+    if not analysis:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No analysis results found for this document. Run POST /api/documents/{id}/analyze first."
+        )
+
+    # Reconstruct VocabularyProfile from database record
+    from models.analysis import (
+        VocabularyStatistics,
+        GradeDistribution,
+        WordAnalysisResult
+    )
+
+    statistics = VocabularyStatistics(
+        total_words=analysis.total_words,
+        unique_words=analysis.unique_words,
+        analyzed_words=analysis.analyzed_words,
+        unknown_words=analysis.unknown_words,
+        unknown_percentage=analysis.unknown_percentage,
+        average_grade_level=analysis.average_grade_level,
+        below_grade_count=analysis.below_grade_count,
+        at_grade_count=analysis.at_grade_count,
+        above_grade_count=analysis.above_grade_count
+    )
+
+    grade_distribution = GradeDistribution.from_dict(analysis.grade_distribution)
+
+    challenging_words = [
+        WordAnalysisResult(**word) for word in analysis.challenging_words
+    ]
+
+    word_details = [
+        WordAnalysisResult(**word) for word in analysis.word_details
+    ]
+
+    profile = VocabularyProfile(
+        student_grade_level=analysis.student_grade_level,
+        statistics=statistics,
+        grade_distribution=grade_distribution,
+        challenging_words=challenging_words,
+        word_details=word_details
+    )
+
+    return profile
