@@ -192,7 +192,6 @@ so that **backend API endpoints are secure and only accessible to authenticated 
 2. Environment variables configured:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `SUPABASE_JWT_SECRET` (from Supabase project settings)
 
 3. Supabase client initialized in FastAPI:
    - Client configured with service role key
@@ -200,7 +199,8 @@ so that **backend API endpoints are secure and only accessible to authenticated 
 
 4. Authentication middleware implemented:
    - Extracts JWT from `Authorization: Bearer <token>` header
-   - Verifies JWT signature using Supabase JWT secret
+   - Verifies JWT signature using Supabase JWKS endpoint (`https://<project>.supabase.co/auth/v1/.well-known/jwks.json`)
+   - Uses asymmetric key verification (modern approach, replaces legacy JWT secret)
    - Extracts educator ID from token
    - Attaches educator ID to request context
    - Returns 401 Unauthorized for invalid/missing tokens
@@ -304,10 +304,10 @@ so that **the application is accessible online and we have a production-like env
 3. Environment variables configured in AWS:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `SUPABASE_JWT_SECRET`
    - `AWS_S3_BUCKET`
    - `AWS_REGION`
    - OpenAI/OpenRouter keys (for later use)
+   - Note: JWT verification uses JWKS endpoint, no JWT_SECRET needed
 
 4. Networking and security:
    - HTTPS enabled for both frontend and backend

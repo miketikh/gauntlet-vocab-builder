@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vocab Builder
 
-## Getting Started
+**Personalized Vocabulary Recommendation Engine for Middle School Students**
 
-First, run the development server:
+An AI-powered platform that analyzes student writing and conversation transcripts to provide personalized, grade-appropriate vocabulary recommendations for middle school educators.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Structure
+
+This is a monorepo containing both frontend and backend applications:
+
+```
+vocab-builder/
+├── web/              # Next.js frontend (deployed to Vercel)
+├── api/              # FastAPI backend (deployed to AWS)
+├── docs/             # Documentation and PRD
+│   ├── prd/         # Product Requirements Document (sharded)
+│   └── ...
+├── .bmad-core/       # BMAD agent configuration
+└── README.md         # This file
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Frontend (Next.js)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd web
+pnpm install
+pnpm dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-To learn more about Next.js, take a look at the following resources:
+See [`web/README.md`](web/README.md) for more details (if available).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Backend (FastAPI)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cd api
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env      # Configure your environment variables
+uvicorn main:app --reload --port 8000
+```
 
-## Deploy on Vercel
+API available at [http://localhost:8000](http://localhost:8000)
+API docs at [http://localhost:8000/docs](http://localhost:8000/docs)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See [`api/README.md`](api/README.md) for more details.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+### Frontend
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Auth:** Supabase Auth
+- **Deployment:** Vercel
+
+### Backend
+- **Framework:** FastAPI
+- **Language:** Python 3.11+
+- **Database:** Supabase (PostgreSQL)
+- **Storage:** AWS S3
+- **AI/NLP:** LangChain + OpenAI
+- **Deployment:** AWS Lambda/ECS
+
+## Documentation
+
+- **[PRD](docs/prd/)** - Product Requirements Document (sharded by epic)
+- **[Project Requirements](docs/project_requirements_and_overview.md)** - Original requirements from Flourish Schools
+- **[Project Notes](docs/project_thoughts_and_ideas.md)** - Initial brainstorming and ideas
+
+## Development Workflow
+
+### Running Both Services
+
+**Terminal 1 (Frontend):**
+```bash
+cd web && pnpm dev
+```
+
+**Terminal 2 (Backend):**
+```bash
+cd api && source venv/bin/activate && uvicorn main:app --reload
+```
+
+### Environment Variables
+
+Both `/web` and `/api` require environment configuration:
+
+- **Frontend:** Copy `web/.env.local.example` to `web/.env.local`
+- **Backend:** Copy `api/.env.example` to `api/.env`
+
+See respective directories for required variables.
+
+## Contributing
+
+This project follows an epic-based development approach. See the [PRD](docs/prd/) for the full product specification and epic breakdown.
+
+### Epic Overview
+
+1. **Epic 1:** Foundation & Authentication
+2. **Epic 2:** Student Management & Document Upload
+3. **Epic 3:** Vocabulary Analysis Engine
+4. **Epic 4:** Personalized Recommendations
+5. **Epic 5:** Progress Tracking & Insights
+
+## License
+
+Private project for Flourish Schools.
+
+## Contact
+
+For questions or issues, please contact the development team.
