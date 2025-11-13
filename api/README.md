@@ -29,6 +29,8 @@ npm install
 cp .env.example .env
 # Edit .env with your configuration
 # IMPORTANT: Add DATABASE_URL for schema migrations (see drizzle/README.md)
+# NOTE: Use "Connection pooling" URI from Supabase, NOT "Direct connection"
+#       Format: postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-2.pooler.supabase.com:6543/postgres
 ```
 
 ### 5. Push database schema

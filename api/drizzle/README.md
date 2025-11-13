@@ -67,12 +67,21 @@ DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-2.pool
 
 ### Getting Your DATABASE_URL
 
+**IMPORTANT**: You must use the **Connection pooling** URI, not the "Direct connection" URI.
+
 1. Go to your Supabase project dashboard
 2. Navigate to: **Project Settings** > **Database**
-3. Under "Connection string", select **Session mode** (port 6543)
+3. Under "Connection string", select **Connection pooling** (NOT "Direct connection")
+   - The pooling URI uses `pooler.supabase.com:6543`
+   - The direct connection URI uses `db.*.supabase.co:5432` (this will NOT work with Drizzle)
 4. Copy the connection string
 5. Replace `[YOUR-PASSWORD]` with your actual database password
 6. Add it to your `.env` file
+
+**Why Connection Pooling?**
+- The direct connection URI (`db.*.supabase.co`) is not externally accessible by default
+- Connection pooling (`pooler.supabase.com`) is designed for external connections
+- Without pooling, you'll get DNS errors like `ENOTFOUND db.*.supabase.co`
 
 ### Install Dependencies
 
@@ -297,12 +306,25 @@ For production:
 
 ## Troubleshooting
 
-### "Tenant or user not found" Error
+### "Tenant or user not found" or DNS Errors (ENOTFOUND)
 
-This means `DATABASE_URL` is incorrectly formatted. Double-check:
-- Project reference matches your Supabase URL
-- Database password is correct (not the service role key)
-- Using session pooler (port 6543) for development
+These errors usually mean `DATABASE_URL` is incorrectly formatted or using the wrong connection type:
+
+**Common Issues:**
+- Using "Direct connection" URI (`db.*.supabase.co:5432`) instead of "Connection pooling" URI
+- Project reference doesn't match your Supabase URL
+- Database password is incorrect (not the service role key)
+- Wrong port number (should be 6543 for pooler, not 5432)
+
+**Solution:**
+1. Go to Supabase Dashboard > Project Settings > Database
+2. Select **Connection pooling** (NOT "Direct connection")
+3. Copy the connection string with format:
+   ```
+   postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-2.pooler.supabase.com:6543/postgres
+   ```
+4. Replace `[PASSWORD]` with your actual database password
+5. Update your `.env` file
 
 ### Connection Timeout
 

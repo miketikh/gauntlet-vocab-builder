@@ -40,11 +40,13 @@ if (databaseUrl) {
   }
 
   // Note: You need to add DATABASE_URL to your .env file with the actual PostgreSQL connection string
-  // Get it from Supabase Dashboard: Project Settings > Database > Connection string (Session mode)
+  // Get it from Supabase Dashboard: Project Settings > Database > Connection string
+  // IMPORTANT: Use "Connection pooling" (pooler.supabase.com:6543) NOT "Direct connection" (db.*.supabase.co:5432)
   throw new Error(
     'DATABASE_URL environment variable is required for database migrations.\n' +
     'Get your connection string from Supabase Dashboard:\n' +
-    'Project Settings > Database > Connection string (Session mode)\n' +
+    'Project Settings > Database > Connection string > Connection pooling (NOT Direct connection)\n' +
+    'Format: postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-2.pooler.supabase.com:6543/postgres\n' +
     'Add it to your .env file as: DATABASE_URL=postgresql://...'
   );
 }
