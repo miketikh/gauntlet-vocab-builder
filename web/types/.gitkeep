@@ -1,0 +1,2 @@
+# This directory contains auto-generated TypeScript types from FastAPI OpenAPI schema
+# Run `npm run generate:api-types` to generate types

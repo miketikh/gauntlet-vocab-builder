@@ -16,6 +16,11 @@ supabase>=2.24.0
 # JWT verification
 python-jose[cryptography]>=3.3.0
 
+# Database ORM and migrations
+sqlmodel>=0.0.14
+alembic>=1.13.0
+psycopg2-binary>=2.9.9
+
 # AWS S3
 boto3>=1.35.0
 
