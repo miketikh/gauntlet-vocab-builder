@@ -430,6 +430,340 @@ Services are ready for Story 3.4 (Document Analysis Endpoint):
 - Proper error responses
 - Async-ready design
 
+## LangChain and OpenAI Integration
+
+### Overview
+
+The vocabulary recommendation system uses LangChain with OpenAI's GPT models to generate personalized, AI-powered vocabulary recommendations. The system analyzes student writing and suggests appropriate higher-grade vocabulary words.
+
+### Setup
+
+1. **Install AI libraries:**
+```bash
+pip install -r requirements.txt
+```
+
+The following packages are included:
+- `langchain>=0.1.0` - AI orchestration framework
+- `langchain-openai>=0.0.2` - OpenAI integration for LangChain
+- `langchain-core>=0.1.0` - Core LangChain components
+- `openai>=1.10.0` - OpenAI Python client
+
+2. **Configure API key:**
+
+Add your OpenAI API key to `.env`:
+```bash
+OPENAI_API_KEY=sk-proj-...
+LLM_MODEL=gpt-4o-mini
+LLM_TEMPERATURE=0.3
+```
+
+**Supported Models:**
+- `gpt-4o-mini` (recommended) - Cost-effective, fast responses
+- `gpt-4` - More capable but expensive
+- `gpt-4-turbo` - Balance of speed and capability
+
+**Configuration Options:**
+- `LLM_MODEL` - Model to use (default: gpt-4o-mini)
+- `LLM_TEMPERATURE` - Creativity vs consistency (0.0-1.0, default: 0.3)
+- `LLM_TIMEOUT` - Request timeout in seconds (default: 30)
+- `LLM_MAX_RETRIES` - Max retry attempts (default: 3)
+
+### Components
+
+#### 1. LLM Service (`services/llm.py`)
+
+The LLM service provides a singleton pattern for accessing the ChatOpenAI instance with automatic configuration from environment variables.
+
+**Key Features:**
+- Singleton pattern for efficient model reuse
+- Automatic environment variable loading
+- Comprehensive error handling
+- Token usage tracking
+- Cost estimation
+
+**Usage Example:**
+```python
+from services.llm import get_llm, test_llm_connection
+
+# Get configured LLM instance
+llm = get_llm()
+
+# Test connection
+result = await test_llm_connection()
+if result["success"]:
+    print(f"Connected! Using {result['model']}")
+else:
+    print(f"Error: {result['error']}")
+```
+
+**Error Handling:**
+The service handles common errors gracefully:
+- **Authentication Error** - Invalid API key
+- **Rate Limit Error** - Too many requests (automatic retry with exponential backoff)
+- **Timeout Error** - Request took too long
+- **API Error** - General OpenAI API issues
+
+#### 2. Prompt Templates (`prompts/recommendations.py`)
+
+Structured prompt templates for generating vocabulary recommendations:
+
+**Available Templates:**
+- `RECOMMENDATION_PROMPT` - Generate vocabulary recommendations
+- `VOCABULARY_GAP_ANALYSIS_PROMPT` - Analyze text for improvement opportunities
+- `SUBJECT_SPECIFIC_PROMPT` - Subject-focused recommendations
+- `SIMPLE_TEST_PROMPT` - Connection testing
+
+**Example Usage:**
+```python
+from prompts.recommendations import RECOMMENDATION_PROMPT, format_word_list
+
+# Format data for prompt
+available_words = format_word_list([
+    {"word": "analyze", "grade": 7, "definition": "examine in detail"},
+    {"word": "evaluate", "grade": 8, "definition": "assess value or quality"}
+])
+
+# Format prompt with student data
+messages = RECOMMENDATION_PROMPT.format_messages(
+    student_grade=8,
+    avg_grade_level=7.2,
+    subject="Science",
+    challenging_words="...",
+    available_words=available_words,
+    count=5
+)
+
+# Invoke LLM
+response = await llm.ainvoke(messages)
+```
+
+#### 3. Recommendation Models (`models/recommendations.py`)
+
+Pydantic models for type-safe recommendation handling:
+
+**Key Models:**
+- `VocabularyRecommendation` - Single word recommendation
+- `RecommendationRequest` - Request parameters
+- `RecommendationSet` - Collection of recommendations
+- `RecommendationResponse` - API response format
+- `VocabularyGapAnalysis` - Text improvement opportunities
+
+**Example:**
+```python
+from models.recommendations import VocabularyRecommendation
+
+recommendation = VocabularyRecommendation(
+    word="analyze",
+    recommended_grade=7,
+    current_usage="look at",
+    definition="to examine something carefully and in detail",
+    example_sentence="Scientists analyze data to find patterns.",
+    rationale="Essential vocabulary for scientific inquiry."
+)
+```
+
+#### 4. Token Tracking and Cost Estimation
+
+Monitor token usage and estimate costs:
+
+```python
+from services.llm import token_tracker, estimate_cost
+
+# Track usage
+token_tracker.add_usage(prompt_tokens=150, completion_tokens=75)
+
+# Get statistics
+stats = token_tracker.get_stats("gpt-4o-mini")
+print(f"Total cost: ${stats['estimated_cost_usd']:.6f}")
+
+# Estimate individual request cost
+cost = estimate_cost(
+    prompt_tokens=150,
+    completion_tokens=75,
+    model="gpt-4o-mini"
+)
+```
+
+**Cost Reference (as of November 2024):**
+- **gpt-4o-mini**: $0.150/1M input tokens, $0.600/1M output tokens
+- **gpt-4**: $30.00/1M input tokens, $60.00/1M output tokens
+- **gpt-4-turbo**: $10.00/1M input tokens, $30.00/1M output tokens
+
+### Testing
+
+Run the comprehensive LLM test suite:
+
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Run test script
+python3 scripts/test_llm.py
+```
+
+**Test Coverage:**
+1. Basic OpenAI connection test
+2. Simple prompt/response test
+3. Recommendation prompt template test
+4. Error handling validation
+5. Token tracking and cost estimation
+
+**Sample Output:**
+```
+======================================================================
+  Test 1: Basic OpenAI Connection
+======================================================================
+
+✓ OpenAI connection successful!
+ℹ Model: gpt-4o-mini
+ℹ Response: Connection successful!
+ℹ Tokens used: 25
+
+======================================================================
+  Test 3: Recommendation Prompt Test
+======================================================================
+
+✓ Recommendation prompt test successful!
+ℹ Response time: 2.34 seconds
+
+  Recommendation 1:
+    Word: analyze (Grade 7)
+    Replaces: look at
+    Definition: to examine something carefully and in detail
+    Example: Scientists analyze data to find patterns in experiments.
+    Rationale: Essential academic vocabulary for scientific inquiry.
+
+ℹ Token usage:
+  Prompt tokens: 245
+  Completion tokens: 128
+  Total tokens: 373
+  Estimated cost: $0.000113
+```
+
+### Prompt Engineering Approach
+
+Our prompts are designed with educational best practices:
+
+**System Role:**
+- Expert vocabulary educator
+- Middle school specialization (grades 6-8)
+- Focus on personalized, appropriate recommendations
+
+**Input Context:**
+- Student grade level and current vocabulary proficiency
+- Subject matter (ELA, Math, Science, Social Studies)
+- Words student currently struggles with
+- Available higher-grade vocabulary words
+
+**Output Requirements:**
+- JSON format for easy parsing
+- Clear definitions and examples
+- Context-aware rationale
+- Grade-level appropriateness validation
+
+**Quality Controls:**
+- Only recommend from provided word list
+- Ensure 1+ grade level progression
+- Subject-appropriate vocabulary
+- Varied word types (nouns, verbs, adjectives)
+
+### Alternative Provider Support (OpenRouter)
+
+To use OpenRouter instead of OpenAI:
+
+1. **Get OpenRouter API key:** https://openrouter.ai/
+
+2. **Update `.env`:**
+```bash
+OPENAI_API_KEY=sk-or-v1-...  # OpenRouter key
+OPENAI_API_BASE=https://openrouter.ai/api/v1
+LLM_MODEL=anthropic/claude-3-5-sonnet  # Or any OpenRouter model
+```
+
+3. **No code changes needed** - The service automatically uses the base URL
+
+**Supported OpenRouter Models:**
+- `anthropic/claude-3-5-sonnet`
+- `google/gemini-pro`
+- `meta-llama/llama-3-70b-instruct`
+- See OpenRouter docs for full model list
+
+### Cost Monitoring
+
+Monitor LLM usage and costs:
+
+```python
+from services.llm import token_tracker
+
+# Get current session statistics
+stats = token_tracker.get_stats("gpt-4o-mini")
+
+print(f"Requests: {stats['total_requests']}")
+print(f"Total tokens: {stats['total_tokens']}")
+print(f"Estimated cost: ${stats['estimated_cost_usd']:.6f}")
+
+# Reset tracker (e.g., at start of day)
+token_tracker.reset()
+```
+
+**Best Practices:**
+- Track token usage per recommendation generation
+- Set budget alerts in OpenAI dashboard
+- Use `gpt-4o-mini` for cost efficiency
+- Batch recommendations when possible
+- Monitor costs daily during development
+
+### Performance Considerations
+
+**Response Times (typical):**
+- Simple connection test: <1 second
+- Single recommendation: 2-3 seconds
+- 10 recommendations: 3-5 seconds
+
+**Optimization Tips:**
+- Use singleton pattern (already implemented)
+- Request multiple recommendations at once
+- Set appropriate timeout values
+- Implement caching for repeated queries
+- Consider batch processing for large datasets
+
+### Troubleshooting
+
+**"OPENAI_API_KEY not set"**
+- Add key to `.env` file
+- Verify `.env` is in `/api` directory
+- Check key format starts with `sk-proj-`
+
+**"Authentication failed"**
+- Verify API key is valid and active
+- Check OpenAI account has credits
+- Ensure no extra whitespace in key
+
+**"Rate limit exceeded"**
+- Wait before retrying (exponential backoff implemented)
+- Upgrade OpenAI plan for higher limits
+- Consider using OpenRouter for load balancing
+
+**"Request timeout"**
+- Increase `LLM_TIMEOUT` in `.env`
+- Check network connectivity
+- Reduce recommendation count per request
+
+**"Invalid JSON response"**
+- LLM sometimes adds markdown formatting
+- Parser handles code blocks automatically
+- Contact support if issues persist
+
+### Next Steps
+
+This setup enables:
+- **Story 4.2**: Recommendation generation service
+- **Story 4.3**: API endpoints for recommendations
+- **Story 4.4**: Frontend recommendation display
+
+The LLM service is ready for integration with vocabulary analysis and student data.
+
 ## Data Import Scripts
 
 ### Import Grade-Level Vocabulary Data
