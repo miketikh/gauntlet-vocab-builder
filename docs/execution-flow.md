@@ -43,24 +43,16 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 5: Deployment
+## PHASE 5: Student Management Foundation
 **Requires: Phase 4 complete**
-
-### Sequential
-- **Story 1.7**: Deploy Frontend to Vercel and Backend to AWS
-
----
-
-## PHASE 6: Student Management Foundation
-**Requires: Phase 5 complete (Epic 1 complete)**
 
 ### Sequential
 - **Story 2.1**: Create Student Profile Form (frontend, creates student workflow)
 
 ---
 
-## PHASE 7: Student UI Development
-**Requires: Phase 6 complete**
+## PHASE 6: Student UI Development
+**Requires: Phase 5 complete**
 
 ### Parallel
 - **Story 2.2**: Display Student List on Dashboard (frontend, dashboard work)
@@ -68,7 +60,7 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 8: Vocabulary Analysis Backend
+## PHASE 7: Vocabulary Analysis Backend
 **Requires: Phase 4 complete (3.1, 3.2 done)**
 
 ### Sequential
@@ -76,8 +68,8 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 9: Document Upload & Analysis
-**Requires: Phase 7 complete (2.3 done), Phase 4 complete (1.6 done)**
+## PHASE 8: Document Upload & Analysis
+**Requires: Phase 6 complete (2.3 done), Phase 4 complete (1.6 done)**
 
 ### Sequential
 - **Story 2.4**: Implement Document Upload with S3 Integration (full-stack, file handling)
@@ -90,16 +82,16 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 10: Analysis Pipeline
-**Requires: Phase 8 complete (3.3 done)**
+## PHASE 9: Analysis Pipeline
+**Requires: Phase 7 complete (3.3 done)**
 
 ### Sequential
 - **Story 3.4**: Create Document Analysis Endpoint (backend, orchestration)
 
 ---
 
-## PHASE 11: Analysis UI & AI Setup
-**Requires: Phase 10 complete (3.4 done), Phase 7 complete (2.3, 2.5 done)**
+## PHASE 10: Analysis UI & AI Setup
+**Requires: Phase 9 complete (3.4 done), Phase 6 complete (2.3, 2.5 done)**
 
 ### Parallel
 - **Story 3.5**: Display Vocabulary Profile on Student Detail Page (frontend, visualization)
@@ -108,8 +100,8 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 12: Recommendation Engine
-**Requires: Phase 11 complete (4.1, 3.4 done)**
+## PHASE 11: Recommendation Engine
+**Requires: Phase 10 complete (4.1, 3.4 done)**
 
 ### Sequential
 - **Story 4.2**: Build Recommendation Generation Service (backend, AI logic)
@@ -119,8 +111,8 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 13: Recommendation UI & Bulk Features
-**Requires: Phase 12 complete (4.3 done), Phase 7 complete (2.3 done)**
+## PHASE 12: Recommendation UI & Bulk Features
+**Requires: Phase 11 complete (4.3 done), Phase 6 complete (2.3 done)**
 
 ### Parallel
 - **Story 4.4**: Display Recommendations on Student Detail Page (frontend, UI)
@@ -128,16 +120,16 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 14: Advanced Recommendation Features
-**Requires: Phase 13 complete (4.4 done)**
+## PHASE 13: Advanced Recommendation Features
+**Requires: Phase 12 complete (4.4 done)**
 
 ### Sequential
 - **Story 4.5**: Implement Customizable Recommendation Settings (full-stack, settings)
 
 ---
 
-## PHASE 15: Progress Tracking Foundation
-**Requires: Phase 10 complete (3.4 done), Phase 12 complete (4.3 done)**
+## PHASE 14: Progress Tracking Foundation
+**Requires: Phase 9 complete (3.4 done), Phase 11 complete (4.3 done)**
 
 ### Parallel
 - **Story 5.1**: Implement Historical Vocabulary Tracking (backend, tracking logic)
@@ -145,8 +137,8 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 16: Progress UI
-**Requires: Phase 15 complete (5.1, 5.3 done), Phase 7 complete (2.2, 2.3 done)**
+## PHASE 15: Progress UI
+**Requires: Phase 14 complete (5.1, 5.3 done), Phase 6 complete (2.2, 2.3 done)**
 
 ### Parallel
 - **Story 5.2**: Build Interactive Progress Visualization (frontend, charts on detail page)
@@ -155,8 +147,8 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
-## PHASE 17: AI Insights
-**Requires: Phase 15 complete (5.1, 5.3 done), Phase 11 complete (4.1 done)**
+## PHASE 16: AI Insights
+**Requires: Phase 14 complete (5.1, 5.3 done), Phase 10 complete (4.1 done)**
 
 ### Sequential
 - **Story 5.5**: Generate AI-Powered Insights and Recommendations (backend + frontend, AI insights)
@@ -214,14 +206,24 @@ This document outlines the execution phases for all epics and stories, optimized
 
 ---
 
+---
+
+## PHASE 17: Deployment (FINAL)
+**Requires: All features complete**
+
+### Sequential
+- **Story 1.7**: Deploy Frontend to Vercel and Backend to AWS
+
+---
+
 ## Estimated Timeline
 
 Assuming 2-3 agents working in parallel:
 
-- **Phase 1-5** (Epic 1): 3-4 days
-- **Phase 6-9** (Epic 2): 2-3 days
-- **Phase 10-11** (Epic 3 + 4.1): 2-3 days
-- **Phase 12-14** (Epic 4): 2-3 days
+- **Phase 1-4** (Epic 1 - Foundation): 3-4 days
+- **Phase 5-8** (Epic 2): 2-3 days
+- **Phase 9-10** (Epic 3 + 4.1): 2-3 days
+- **Phase 11-13** (Epic 4): 2-3 days
 - **Phase 15-17** (Epic 5): 2-3 days
 
 **Total: 11-16 days with parallel execution**

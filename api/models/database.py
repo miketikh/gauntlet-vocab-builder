@@ -76,6 +76,7 @@ class Document(SQLModel, table=True):
     s3_key: str = Field(max_length=512, description="S3 object key for file storage")
     upload_date: datetime = Field(default_factory=datetime.utcnow)
     file_type: FileType = Field(sa_column=Column(SQLEnum(FileType)))
+    subject: Optional[str] = Field(default=None, max_length=100, description="Subject area (e.g., ELA, Math, Science)")
     status: DocumentStatus = Field(
         default=DocumentStatus.PENDING,
         sa_column=Column(SQLEnum(DocumentStatus))
@@ -140,6 +141,7 @@ class DocumentPublic(SQLModel):
     title: str
     upload_date: datetime
     file_type: FileType
+    subject: Optional[str]
     status: DocumentStatus
     error_message: Optional[str]
 
@@ -177,6 +179,7 @@ class DocumentCreate(SQLModel):
     title: str
     s3_key: str
     file_type: FileType
+    subject: Optional[str] = None
 
 
 class GradeWordCreate(SQLModel):

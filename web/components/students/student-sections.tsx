@@ -9,8 +9,19 @@ import {
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog"
 
-export function StudentSections() {
+interface StudentSectionsProps {
+  studentId: number
+  token: string
+  onDocumentUploaded?: () => void
+}
+
+export function StudentSections({
+  studentId,
+  token,
+  onDocumentUploaded,
+}: StudentSectionsProps) {
   return (
     <div className="space-y-6">
       {/* Documents Section */}
@@ -33,13 +44,11 @@ export function StudentSections() {
               Upload student essays, transcripts, or other writing samples to
               begin vocabulary analysis and get personalized recommendations.
             </p>
-            <Button disabled className="gap-2 cursor-not-allowed opacity-50">
-              <Upload className="h-4 w-4" />
-              Upload Document
-            </Button>
-            <p className="text-xs text-muted-foreground mt-3">
-              Document upload coming in Story 2.4
-            </p>
+            <UploadDocumentDialog
+              studentId={studentId}
+              token={token}
+              onUploadComplete={onDocumentUploaded}
+            />
           </div>
 
           {/* Grid ready for document cards - hidden when empty */}

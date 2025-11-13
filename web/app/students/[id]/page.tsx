@@ -104,6 +104,7 @@ export default function StudentDetailPage() {
   const [student, setStudent] = useState<Student | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -130,6 +131,8 @@ export default function StudentDetailPage() {
           router.push("/login")
           return
         }
+
+        setAccessToken(session.access_token)
 
         // Create authenticated API client
         const apiClient = getAuthenticatedClient(session.access_token)
@@ -189,6 +192,12 @@ export default function StudentDetailPage() {
     fetchStudent()
   }, [params.id, router, supabase.auth])
 
+  const handleDocumentUploaded = () => {
+    // Callback for when a document is uploaded
+    // In Story 2.5, this will refresh the document list
+    console.log("Document uploaded successfully!")
+  }
+
   // Loading state
   if (loading) {
     return <StudentDetailSkeleton />
@@ -218,7 +227,13 @@ export default function StudentDetailPage() {
         />
 
         {/* Student Sections */}
-        <StudentSections />
+        {accessToken && (
+          <StudentSections
+            studentId={student.id}
+            token={accessToken}
+            onDocumentUploaded={handleDocumentUploaded}
+          />
+        )}
       </div>
     </DashboardLayout>
   )
