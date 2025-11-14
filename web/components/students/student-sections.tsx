@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { FileText, BarChart3, Lightbulb, AlertCircle } from "lucide-react"
+import { FileText, BarChart3, Lightbulb } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog"
 import { DocumentList } from "@/components/documents/document-list"
 import { BulkAnalyzeButton } from "@/components/documents/bulk-analyze-button"
 import { VocabularyProfile } from "@/components/vocabulary/vocabulary-profile"
+import { RecommendationsSection } from "@/components/vocabulary/recommendations-section"
 import { getAuthenticatedClient } from "@/lib/api-client"
 import {
   Select,
@@ -200,28 +201,12 @@ export function StudentSections({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-amber-100 dark:bg-amber-900 p-3 mb-4">
-              <Lightbulb className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">
-              Recommendations will appear after document analysis
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              After analyzing uploaded documents, the system will generate
-              personalized vocabulary recommendations, learning resources, and
-              practice activities tailored to this student&apos;s needs.
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <AlertCircle className="h-3 w-3" />
-              <span>Recommendation engine coming in Story 4.4</span>
-            </div>
-          </div>
-
-          {/* Placeholder for recommendation cards */}
-          <div className="hidden grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Recommendation cards will be rendered here */}
-          </div>
+          <RecommendationsSection
+            studentId={studentId}
+            studentGradeLevel={studentGradeLevel}
+            token={token}
+            refreshTrigger={analysisRefreshTrigger}
+          />
         </CardContent>
       </Card>
     </div>
