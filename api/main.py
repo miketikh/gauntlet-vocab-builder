@@ -48,6 +48,8 @@ app.include_router(s3.router, prefix="/api/s3", tags=["S3 Document Storage"])
 app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(recommendations.router, prefix="/api/students", tags=["Recommendations"])
+# Add educator-level routes (bulk operations and job tracking)
+app.include_router(recommendations.router, prefix="/api", tags=["Bulk Operations"])
 
 
 @app.get("/")

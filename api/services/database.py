@@ -28,6 +28,10 @@ engine = create_engine(
     max_overflow=10,
 )
 
+# SessionLocal for background tasks
+# Use this when you need to create a session outside of FastAPI's dependency injection
+SessionLocal = lambda: Session(engine)
+
 
 def create_db_and_tables():
     """
