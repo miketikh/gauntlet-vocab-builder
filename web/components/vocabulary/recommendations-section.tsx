@@ -68,9 +68,11 @@ const subjectColors: Record<string, string> = {
 
 const statusColors: Record<RecommendationStatus, string> = {
   pending:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  adopted: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  not_used: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+    "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300 border-gray-200 dark:border-gray-700",
+  adopted:
+    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 border-green-200 dark:border-green-700",
+  not_used:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-200 dark:border-yellow-700",
 }
 
 const statusLabels: Record<RecommendationStatus, string> = {
@@ -92,6 +94,9 @@ export function RecommendationsSection({
 
   // Filters
   const [subjectFilter, setSubjectFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<
+    RecommendationStatus | "all"
+  >("all")
   const [countLimit, setCountLimit] = useState<number>(10)
 
   // Fetch recommendations
@@ -108,6 +113,10 @@ export function RecommendationsSection({
 
         if (subjectFilter !== "all") {
           queryParams.subject = subjectFilter
+        }
+
+        if (statusFilter !== "all") {
+          queryParams.status = statusFilter
         }
 
         // GET /api/students/{student_id}/recommendations
@@ -142,7 +151,14 @@ export function RecommendationsSection({
     }
 
     fetchRecommendations()
-  }, [studentId, token, subjectFilter, countLimit, refreshTrigger])
+  }, [
+    studentId,
+    token,
+    subjectFilter,
+    statusFilter,
+    countLimit,
+    refreshTrigger,
+  ])
 
   // Generate recommendations
   const handleGenerateRecommendations = async () => {
@@ -274,21 +290,51 @@ export function RecommendationsSection({
   // Recommendations exist - show table/cards with filters
   return (
     <div className="space-y-4">
+      {/* Status Filter Tabs */}
+      <div className="flex items-center justify-between">
+        <Tabs
+          value={statusFilter}
+          onValueChange={(value) =>
+            setStatusFilter(value as RecommendationStatus | "all")
+          }
+        >
+          <TabsList>
+            <TabsTrigger value="all">All Words</TabsTrigger>
+            <TabsTrigger
+              value="adopted"
+              className="text-green-600 dark:text-green-400"
+            >
+              Adopted
+            </TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger
+              value="not_used"
+              className="text-yellow-600 dark:text-yellow-400"
+            >
+              Not Used
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex items-center gap-4">
           {/* Subject filter tabs */}
           {availableSubjects.length > 0 && (
-            <Tabs value={subjectFilter} onValueChange={setSubjectFilter}>
-              <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                {availableSubjects.map((subject) => (
-                  <TabsTrigger key={subject} value={subject}>
-                    {subject}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Subject:</span>
+              <Tabs value={subjectFilter} onValueChange={setSubjectFilter}>
+                <TabsList>
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  {availableSubjects.map((subject) => (
+                    <TabsTrigger key={subject} value={subject}>
+                      {subject}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
           )}
 
           {/* Count selector */}
@@ -378,7 +424,7 @@ export function RecommendationsSection({
                     </TableCell>
                     <TableCell>
                       <Badge
-                        className={statusColors[rec.status]}
+                        className={`${statusColors[rec.status]} border font-medium`}
                         variant="secondary"
                       >
                         {statusLabels[rec.status]}
@@ -445,7 +491,7 @@ export function RecommendationsSection({
                         </Badge>
                       )}
                       <Badge
-                        className={statusColors[rec.status]}
+                        className={`${statusColors[rec.status]} border font-medium`}
                         variant="secondary"
                       >
                         {statusLabels[rec.status]}

@@ -9,6 +9,7 @@ import { BulkAnalyzeButton } from "@/components/documents/bulk-analyze-button"
 import { VocabularyProfile } from "@/components/vocabulary/vocabulary-profile"
 import { RecommendationsSection } from "@/components/vocabulary/recommendations-section"
 import { VocabularyProgressChart } from "@/components/vocabulary/vocabulary-progress-chart"
+import { AdoptionMetricsSection } from "@/components/vocabulary/adoption-metrics-section"
 import { getAuthenticatedClient } from "@/lib/api-client"
 import {
   Select,
@@ -192,6 +193,13 @@ export function StudentSections({
           )}
         </CardContent>
       </Card>
+
+      {/* Adoption Metrics Section */}
+      <AdoptionMetricsSection
+        studentId={studentId}
+        token={token}
+        refreshTrigger={analysisRefreshTrigger}
+      />
 
       {/* Recommendations Section */}
       <Card>
