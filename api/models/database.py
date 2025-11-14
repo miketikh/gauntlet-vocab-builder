@@ -352,3 +352,84 @@ class RecommendationCreate(SQLModel):
     context: Optional[str] = None
     example_sentence: Optional[str] = None
     rationale: Optional[str] = None
+
+
+class VocabularyHistory(SQLModel, table=True):
+    """
+    VocabularyHistory table - stores snapshots of student vocabulary over time
+    Created after each document analysis to track progress
+    """
+    __tablename__ = "vocabulary_history"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    student_id: int = Field(foreign_key="students.id", index=True)
+    document_id: int = Field(foreign_key="documents.id", index=True)
+    analysis_result_id: int = Field(foreign_key="analysis_results.id", index=True)
+
+    # Timestamp for this snapshot
+    analyzed_at: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+    # Key metrics tracked over time
+    average_grade_level: Optional[float] = Field(default=None, description="Weighted average grade level")
+    total_words: int = Field(ge=0, description="Total word count")
+    unique_words: int = Field(ge=0, description="Count of unique words")
+
+    # Grade distribution snapshot (stored as JSON)
+    grade_distribution: dict = Field(
+        default={},
+        sa_column=Column(JSON),
+        description="Distribution of words across grade levels at this point in time"
+    )
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class WordUsageTracking(SQLModel, table=True):
+    """
+    WordUsageTracking table - tracks when recommended words are adopted/used
+    Links recommendations to documents where the word was detected
+    """
+    __tablename__ = "word_usage_tracking"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    recommendation_id: int = Field(foreign_key="recommendations.id", index=True)
+    document_id: int = Field(foreign_key="documents.id", index=True)
+
+    # Was the word actually used?
+    used: bool = Field(default=True, description="Whether the recommended word was detected")
+
+    # When was it detected?
+    detected_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # How many times did it appear?
+    occurrence_count: int = Field(default=1, ge=0, description="Number of times word appeared in document")
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class VocabularyHistoryPublic(SQLModel):
+    """Public vocabulary history data for API responses"""
+    id: int
+    student_id: int
+    document_id: int
+    analysis_result_id: int
+    analyzed_at: datetime
+    average_grade_level: Optional[float]
+    total_words: int
+    unique_words: int
+    grade_distribution: dict
+
+
+class WordUsageTrackingPublic(SQLModel):
+    """Public word usage tracking data for API responses"""
+    id: int
+    recommendation_id: int
+    document_id: int
+    used: bool
+    detected_at: datetime
+    occurrence_count: int
+
+
+class RecommendationStatusUpdate(SQLModel):
+    """Data for updating recommendation status"""
+    status: RecommendationStatus

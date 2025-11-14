@@ -26,7 +26,8 @@ from models.database import (
     Student,
     Educator,
     AnalysisResult,
-    AnalysisResultPublic
+    AnalysisResultPublic,
+    VocabularyHistory,
 )
 from models.analysis import VocabularyProfile
 
@@ -595,6 +596,22 @@ async def analyze_document(
         )
 
         session.add(analysis_result)
+        session.flush()  # Flush to get analysis_result.id before commit
+
+        # Step 5.5: Create vocabulary history snapshot
+        logger.info("Creating vocabulary history snapshot")
+        history_entry = VocabularyHistory(
+            student_id=document.student_id,
+            document_id=document.id,
+            analysis_result_id=analysis_result.id,
+            analyzed_at=datetime.utcnow(),
+            average_grade_level=profile.statistics.average_grade_level,
+            total_words=profile.statistics.total_words,
+            unique_words=profile.statistics.unique_words,
+            grade_distribution=profile.grade_distribution.to_dict(),
+            created_at=datetime.utcnow()
+        )
+        session.add(history_entry)
 
         # Step 6: Update document status to 'completed'
         document.status = DocumentStatus.COMPLETED
@@ -604,7 +621,7 @@ async def analyze_document(
         session.commit()
         session.refresh(analysis_result)
 
-        logger.info(f"Analysis saved with ID {analysis_result.id}")
+        logger.info(f"Analysis saved with ID {analysis_result.id}, history entry created")
 
         return profile
 
