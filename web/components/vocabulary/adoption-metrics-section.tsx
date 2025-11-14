@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
+import { authenticatedFetch } from "@/lib/api-client"
 
 interface AdoptionMetrics {
   student_id: number
@@ -37,14 +38,9 @@ export function AdoptionMetricsSection({
         setLoading(true)
         setError(null)
 
-        const response = await fetch(
+        const response = await authenticatedFetch(
           `/api/students/${studentId}/recommendations/metrics`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
+          token
         )
 
         if (!response.ok) {

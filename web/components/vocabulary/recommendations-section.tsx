@@ -30,6 +30,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
+import { authenticatedFetch } from "@/lib/api-client"
 
 // Type definitions based on backend API
 type RecommendationStatus = "pending" | "adopted" | "not_used"
@@ -120,16 +121,11 @@ export function RecommendationsSection({
         }
 
         // GET /api/students/{student_id}/recommendations
-        const response = await fetch(
+        const response = await authenticatedFetch(
           `/api/students/${studentId}/recommendations?${new URLSearchParams(
             queryParams
           ).toString()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
+          token
         )
 
         if (!response.ok) {
@@ -166,14 +162,11 @@ export function RecommendationsSection({
       setGenerating(true)
       setError(null)
 
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `/api/students/${studentId}/recommendations/generate`,
+        token,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             count: 10,
             subject: subjectFilter !== "all" ? subjectFilter : null,

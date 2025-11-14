@@ -16,6 +16,34 @@ import type { paths } from "@/types/api"
 // API base URL - configure based on environment
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
+function resolveApiUrl(path: string) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path
+  }
+  if (path.startsWith("/")) {
+    return `${API_BASE_URL}${path}`
+  }
+  return `${API_BASE_URL}/${path}`
+}
+
+function buildHeaders(
+  headers?: HeadersInit,
+  token?: string,
+  includeJsonContentType = true
+) {
+  const merged = new Headers(headers)
+
+  if (includeJsonContentType && !merged.has("Content-Type")) {
+    merged.set("Content-Type", "application/json")
+  }
+
+  if (token) {
+    merged.set("Authorization", `Bearer ${token}`)
+  }
+
+  return merged
+}
+
 /**
  * Type-safe API client
  * All endpoints and request/response types are inferred from OpenAPI schema
@@ -40,6 +68,31 @@ export function getAuthenticatedClient(token: string) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+  })
+}
+
+/**
+ * Thin wrapper around fetch that automatically prefixes the API base URL.
+ * Useful for endpoints that aren't yet represented in the generated OpenAPI types.
+ */
+export async function apiFetch(path: string, init: RequestInit = {}) {
+  return fetch(resolveApiUrl(path), {
+    ...init,
+    headers: buildHeaders(init.headers),
+  })
+}
+
+/**
+ * Authenticated fetch helper that adds the bearer token and base URL prefix.
+ */
+export async function authenticatedFetch(
+  path: string,
+  token: string,
+  init: RequestInit = {}
+) {
+  return fetch(resolveApiUrl(path), {
+    ...init,
+    headers: buildHeaders(init.headers, token),
   })
 }
 

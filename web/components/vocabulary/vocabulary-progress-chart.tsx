@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts"
+import { authenticatedFetch } from "@/lib/api-client"
 
 // Types for the API response
 interface VocabularyHistoryDataPoint {
@@ -57,15 +58,9 @@ export function VocabularyProgressChart({
         setError(null)
 
         // Call the vocabulary history endpoint
-        const response = await fetch(
-          `http://localhost:8000/api/students/${studentId}/vocabulary/history`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await authenticatedFetch(
+          `/api/students/${studentId}/vocabulary/history`,
+          token
         )
 
         if (!response.ok) {
