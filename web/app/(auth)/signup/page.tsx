@@ -86,18 +86,8 @@ export default function SignupPage() {
         return
       }
 
-      // Create educator record in the educators table
-      const { error: educatorError } = await supabase.from("educators").insert({
-        id: authData.user.id,
-        email: values.email,
-        name: values.name,
-        school: values.school || null,
-      })
-
-      if (educatorError) {
-        console.error("Error creating educator record:", educatorError)
-        // Don't block signup if educator record fails, they can still use the app
-      }
+      // Educator record will be created automatically by backend on first API call
+      // via the /api/auth/me endpoint's get_or_create_educator() function
 
       router.push("/dashboard")
       router.refresh()

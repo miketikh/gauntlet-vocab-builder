@@ -13,15 +13,19 @@ export function GradeDistributionChart({
   studentGradeLevel,
 }: GradeDistributionChartProps) {
   // Convert grade distribution to array and sort by grade
-  const distributionArray = Object.entries(gradeDistribution)
+  const distributionArray = Object.entries(gradeDistribution || {})
     .map(([grade, percentage]) => ({
       grade: parseInt(grade),
       percentage,
     }))
+    .filter(({ grade }) => !isNaN(grade)) // Filter out invalid grades
     .sort((a, b) => a.grade - b.grade)
 
   // Find max percentage for scaling
-  const maxPercentage = Math.max(...distributionArray.map((d) => d.percentage))
+  const maxPercentage =
+    distributionArray.length > 0
+      ? Math.max(...distributionArray.map((d) => d.percentage))
+      : 1
 
   // Color coding based on student's grade level
   const getBarColor = (grade: number) => {

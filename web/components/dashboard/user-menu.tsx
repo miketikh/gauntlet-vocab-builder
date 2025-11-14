@@ -15,12 +15,15 @@ import {
 import { LogOut, User } from "lucide-react"
 
 export function UserMenu() {
-  const { educator, signOut } = useAuth()
+  const { user, educator, signOut } = useAuth()
 
-  if (!educator) return null
+  // Show menu if user is logged in (even if educator hasn't loaded)
+  if (!user) return null
 
   // Get initials for avatar
-  const initials = educator.name
+  const displayName = educator?.name || user.email?.split("@")[0] || "User"
+  const displayEmail = educator?.email || user.email || ""
+  const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -45,11 +48,11 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{educator.name}</p>
+            <p className="text-sm font-medium leading-none">{displayName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {educator.email}
+              {displayEmail}
             </p>
-            {educator.school && (
+            {educator?.school && (
               <p className="text-xs leading-none text-muted-foreground pt-1">
                 {educator.school}
               </p>

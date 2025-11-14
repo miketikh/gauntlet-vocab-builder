@@ -1,12 +1,13 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { User } from "@supabase/supabase-js"
+import { User, Session } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
+import { getAuthenticatedClient } from "@/lib/api-client"
 import { useRouter } from "next/navigation"
 
 type Educator = {
-  id: string
+  id: number
   email: string
   name: string
   school: string | null
@@ -30,21 +31,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
 
   useEffect(() => {
-    async function loadEducator(userId: string) {
+    async function loadEducator(session: Session) {
       try {
-        const { data, error } = await supabase
-          .from("educators")
-          .select("*")
-          .eq("id", userId)
-          .single()
+        // Use backend API to get or create educator
+        const apiClient = getAuthenticatedClient(session.access_token)
+        const { data, error } = await apiClient.GET("/api/auth/me")
 
         if (error) {
-          console.error("Error loading educator:", error)
-        } else {
-          setEducator(data)
+          console.error("Error loading educator from API:", error)
+          setEducator(null)
+        } else if (data) {
+          setEducator(data as Educator)
         }
       } catch (error) {
         console.error("Error loading educator:", error)
+        setEducator(null)
       } finally {
         setLoading(false)
       }
@@ -53,8 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (session?.user) {
-        loadEducator(session.user.id)
+      if (session) {
+        loadEducator(session)
       } else {
         setLoading(false)
       }
@@ -65,8 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) {
-        loadEducator(session.user.id)
+      if (session) {
+        loadEducator(session)
       } else {
         setEducator(null)
         setLoading(false)

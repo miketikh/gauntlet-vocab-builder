@@ -19,7 +19,7 @@ export function StatsCards({
   const stats = [
     {
       title: "Total Words",
-      value: totalWords.toLocaleString(),
+      value: (totalWords ?? 0).toLocaleString(),
       icon: BookOpen,
       description: "Words in document",
       color: "text-blue-600 dark:text-blue-400",
@@ -27,7 +27,7 @@ export function StatsCards({
     },
     {
       title: "Unique Words",
-      value: uniqueWords.toLocaleString(),
+      value: (uniqueWords ?? 0).toLocaleString(),
       icon: ListChecks,
       description: "Distinct vocabulary",
       color: "text-green-600 dark:text-green-400",
@@ -35,7 +35,7 @@ export function StatsCards({
     },
     {
       title: "Grade Level",
-      value: averageGradeLevel.toFixed(1),
+      value: (averageGradeLevel ?? 0).toFixed(1),
       icon: TrendingUp,
       description: "Average difficulty",
       color: "text-purple-600 dark:text-purple-400",
@@ -43,7 +43,7 @@ export function StatsCards({
     },
     {
       title: "Unknown Words",
-      value: `${(unmappedPercentage * 100).toFixed(1)}%`,
+      value: `${((unmappedPercentage ?? 0) * 100).toFixed(1)}%`,
       icon: HelpCircle,
       description: "Not in grade lists",
       color: "text-amber-600 dark:text-amber-400",

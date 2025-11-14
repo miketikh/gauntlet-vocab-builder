@@ -15,30 +15,8 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/login?error=auth_failed`)
     }
 
-    // If this is a new user (OAuth signup), create educator record
-    if (data.user) {
-      const { error: educatorError } = await supabase.from("educators").upsert(
-        {
-          id: data.user.id,
-          email: data.user.email!,
-          name:
-            data.user.user_metadata.name ||
-            data.user.user_metadata.full_name ||
-            data.user.email?.split("@")[0] ||
-            "Educator",
-          school: null,
-        },
-        {
-          onConflict: "id",
-          ignoreDuplicates: true,
-        }
-      )
-
-      if (educatorError) {
-        console.error("Error creating educator record:", educatorError)
-        // Don't block login if educator record fails
-      }
-    }
+    // Educator record will be created automatically by backend on first API call
+    // via the /api/auth/me endpoint's get_or_create_educator() function
   }
 
   // URL to redirect to after sign in process completes
