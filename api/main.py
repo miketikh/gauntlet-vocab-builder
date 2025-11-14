@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 
 from models.database import Educator, Student, EducatorPublic
 from services.database import get_session, init_db
-from routers import auth, s3, students, documents
+from routers import auth, s3, students, documents, recommendations
 
 app = FastAPI(
     title="Vocab Builder API",
@@ -47,6 +47,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(s3.router, prefix="/api/s3", tags=["S3 Document Storage"])
 app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
+app.include_router(recommendations.router, prefix="/api/students", tags=["Recommendations"])
 
 
 @app.get("/")
