@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { getAuthenticatedClient } from "@/lib/api-client"
+import { authenticatedFetch } from "@/lib/api-client"
 
 interface StudentSummary {
   student_id: number
@@ -72,27 +72,22 @@ export default function DashboardPage() {
         throw new Error("Not authenticated")
       }
 
-      // Create authenticated API client
-      const apiClient = getAuthenticatedClient(session.access_token)
-
-      // Fetch analytics
-      const { data, error: apiError } = await apiClient.GET(
-        "/api/educators/analytics"
+      // Fetch analytics via REST helper (endpoint not yet in OpenAPI schema)
+      const response = await authenticatedFetch(
+        "/api/educators/analytics",
+        session.access_token
       )
 
-      if (apiError) {
-        const errorMessage =
-          typeof apiError === "object" && apiError !== null
-            ? JSON.stringify(apiError)
-            : String(apiError)
-        throw new Error(errorMessage || "Failed to fetch analytics")
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => ({}))
+        const detail =
+          errorPayload?.detail || response.statusText || "Unknown error"
+        throw new Error(`Failed to fetch analytics: ${detail}`)
       }
 
-      if (!data) {
-        throw new Error("No data returned from API")
-      }
+      const data = (await response.json()) as AnalyticsData
 
-      setAnalytics(data as AnalyticsData)
+      setAnalytics(data)
     } catch (err) {
       console.error("Error fetching analytics:", err)
       setAnalyticsError(

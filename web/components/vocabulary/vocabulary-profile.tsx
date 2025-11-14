@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { getAuthenticatedClient } from "@/lib/api-client"
+import { authenticatedFetch } from "@/lib/api-client"
 import { StatsCards } from "./stats-cards"
 import { GradeDistributionChart } from "./grade-distribution-chart"
 import { ChallengingWordsList } from "./challenging-words-list"
@@ -50,34 +50,27 @@ export function VocabularyProfile({
         setLoading(true)
         setError(null)
 
-        const apiClient = getAuthenticatedClient(token)
-
         // GET /api/documents/{document_id}/analysis
-        const { data, error: apiError } = await apiClient.GET(
-          "/api/documents/{document_id}/analysis",
-          {
-            params: {
-              path: {
-                document_id: documentId,
-              },
-            },
-          }
+        const response = await authenticatedFetch(
+          `/api/documents/${documentId}/analysis`,
+          token
         )
 
-        if (apiError) {
-          // If 404, analysis doesn't exist yet
-          if (JSON.stringify(apiError).includes("404")) {
+        if (!response.ok) {
+          if (response.status === 404) {
             setAnalysis(null)
-          } else {
-            setError("Failed to load vocabulary analysis")
-            console.error("Error fetching analysis:", apiError)
+            return
           }
+          const errorPayload = await response.json().catch(() => ({}))
+          const detail =
+            errorPayload?.detail || response.statusText || "Unknown error"
+          setError("Failed to load vocabulary analysis")
+          console.error("Error fetching analysis:", detail)
           return
         }
 
-        if (data) {
-          setAnalysis(data as VocabularyAnalysis)
-        }
+        const data = (await response.json()) as VocabularyAnalysis
+        setAnalysis(data)
       } catch (err) {
         console.error("Error fetching analysis:", err)
         setError("An unexpected error occurred")

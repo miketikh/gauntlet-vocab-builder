@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Vocabulary Builder - Educator Dashboard",
-  description: "Personalized vocabulary recommendations for students",
+  title: "Talk Ladder - AI-Powered Vocabulary Learning",
+  description:
+    "An AI-powered platform that helps middle school students progressively advance their vocabulary while giving educators powerful insights into student growth.",
 }
 
 export default function RootLayout({

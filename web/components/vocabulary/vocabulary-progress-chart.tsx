@@ -143,7 +143,7 @@ export function VocabularyProgressChart({
     }>
   }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = payload[0]!.payload
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="font-semibold text-sm mb-1">{data.document_title}</p>
@@ -226,6 +226,9 @@ export function VocabularyProgressChart({
       day: "numeric",
     }),
   }))
+
+  const firstPoint = historyData.data_points[0]
+  const lastPoint = historyData.data_points[historyData.data_points.length - 1]
 
   // Calculate Y-axis domain (6.0 to 12.0 with some padding)
   const minGrade = Math.min(
@@ -351,16 +354,13 @@ export function VocabularyProgressChart({
               <div>
                 <p className="text-muted-foreground">Starting Level</p>
                 <p className="font-semibold text-lg">
-                  {historyData.data_points[0].average_grade_level?.toFixed(1) ||
-                    "N/A"}
+                  {firstPoint?.average_grade_level?.toFixed(1) || "N/A"}
                 </p>
               </div>
               <div>
                 <p className="text-muted-foreground">Current Level</p>
                 <p className="font-semibold text-lg">
-                  {historyData.data_points[
-                    historyData.data_points.length - 1
-                  ].average_grade_level?.toFixed(1) || "N/A"}
+                  {lastPoint?.average_grade_level?.toFixed(1) || "N/A"}
                 </p>
               </div>
             </div>

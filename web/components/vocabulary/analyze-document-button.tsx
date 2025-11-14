@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Loader2, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { getAuthenticatedClient } from "@/lib/api-client"
+import { authenticatedFetch } from "@/lib/api-client"
 
 interface AnalyzeDocumentButtonProps {
   documentId: number
@@ -24,34 +24,30 @@ export function AnalyzeDocumentButton({
   const handleAnalyze = async () => {
     try {
       setIsAnalyzing(true)
-      const apiClient = getAuthenticatedClient(token)
-
-      // POST to /api/documents/{document_id}/analyze
-      const { data, error } = await apiClient.POST(
-        "/api/documents/{document_id}/analyze",
+      const response = await authenticatedFetch(
+        `/api/documents/${documentId}/analyze`,
+        token,
         {
-          params: {
-            path: {
-              document_id: documentId,
-            },
-          },
+          method: "POST",
         }
       )
 
-      if (error) {
-        console.error("Analysis failed:", error)
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => ({}))
+        const detail =
+          errorPayload?.detail || response.statusText || "Unknown error"
+        console.error("Analysis failed:", detail)
         toast.error("Analysis failed", {
-          description: "Failed to analyze document. Please try again.",
+          description:
+            detail || "Failed to analyze document. Please try again.",
         })
         return
       }
 
-      if (data) {
-        toast.success("Analysis complete", {
-          description: "Vocabulary profile has been generated.",
-        })
-        onAnalysisComplete?.()
-      }
+      toast.success("Analysis complete", {
+        description: "Vocabulary profile has been generated.",
+      })
+      onAnalysisComplete?.()
     } catch (error) {
       console.error("Error analyzing document:", error)
       toast.error("Analysis failed", {
