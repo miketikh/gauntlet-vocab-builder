@@ -8,6 +8,7 @@ import { DocumentList } from "@/components/documents/document-list"
 import { BulkAnalyzeButton } from "@/components/documents/bulk-analyze-button"
 import { VocabularyProfile } from "@/components/vocabulary/vocabulary-profile"
 import { RecommendationsSection } from "@/components/vocabulary/recommendations-section"
+import { VocabularyProgressChart } from "@/components/vocabulary/vocabulary-progress-chart"
 import { getAuthenticatedClient } from "@/lib/api-client"
 import {
   Select,
@@ -209,6 +210,14 @@ export function StudentSections({
           />
         </CardContent>
       </Card>
+
+      {/* Vocabulary Progress Chart */}
+      <VocabularyProgressChart
+        studentId={studentId}
+        studentGradeLevel={studentGradeLevel}
+        token={token}
+        refreshTrigger={analysisRefreshTrigger}
+      />
     </div>
   )
 }
