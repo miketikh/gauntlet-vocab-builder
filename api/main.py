@@ -23,6 +23,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",  # Next.js dev server
         "http://localhost:3001",  # Alternative dev port
+        "https://talkladder.vercel.app",  # Production frontend
     ],
     allow_credentials=True,  # Required for authenticated requests
     allow_methods=["*"],
