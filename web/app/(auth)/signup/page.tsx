@@ -99,27 +99,28 @@ export default function SignupPage() {
     }
   }
 
-  async function signUpWithGoogle() {
-    try {
-      setIsLoading(true)
-      setError(null)
+  // Commented out for future use when Google OAuth is enabled
+  // async function signUpWithGoogle() {
+  //   try {
+  //     setIsLoading(true)
+  //     setError(null)
 
-      const { error: signUpError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      })
+  //     const { error: signUpError } = await supabase.auth.signInWithOAuth({
+  //       provider: "google",
+  //       options: {
+  //         redirectTo: `${window.location.origin}/auth/callback`,
+  //       },
+  //     })
 
-      if (signUpError) {
-        setError(signUpError.message)
-      }
-    } catch {
-      setError("An unexpected error occurred")
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  //     if (signUpError) {
+  //       setError(signUpError.message)
+  //     }
+  //   } catch {
+  //     setError("An unexpected error occurred")
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
   return (
     <Card>
@@ -220,7 +221,8 @@ export default function SignupPage() {
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
 
-            <div className="relative">
+            {/* Commented out for future use when Google OAuth is enabled */}
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -239,7 +241,7 @@ export default function SignupPage() {
               onClick={signUpWithGoogle}
             >
               Sign up with Google
-            </Button>
+            </Button> */}
 
             <div className="text-center text-sm">
               Already have an account?{" "}
