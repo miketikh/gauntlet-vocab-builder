@@ -1,0 +1,13 @@
+[build]
+builder = "RAILPACK"
+
+# RAILPACK auto-installs requirements.txt, we just add spaCy model
+buildCommand = "python3 -m spacy download en_core_web_sm"
+
+[deploy]
+# Already in /api directory, so just run migrations and start server
+startCommand = "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
